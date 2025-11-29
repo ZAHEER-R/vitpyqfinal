@@ -11,9 +11,6 @@ const supabase = createClient(
 
 module.exports = supabase;
 
-// ================================
-//  SIGNUP
-// ================================
 router.post('/signup', async (req, res) => {
     try {
         const { firstName, lastName, email, phone, password } = req.body;
@@ -61,10 +58,6 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-
-// ================================
-//  LOGIN
-// ================================
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -94,10 +87,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
-// ================================
-//  SEND OTP
-// ================================
 router.post('/send-otp', async (req, res) => {
     try {
         const { email } = req.body;
@@ -123,10 +112,6 @@ router.post('/send-otp', async (req, res) => {
     }
 });
 
-
-// ================================
-//  VERIFY OTP
-// ================================
 router.post('/verify-otp', async (req, res) => {
     try {
         const { email, otp } = req.body;
