@@ -52,6 +52,23 @@ body {
     top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 100%;
+}
+
+.site-logo {
+    transform: scale(1.2);
+}
+
+.site-logo img {
+    transform: scale(2.1);
+}
+
+.container {
+    /*max-width: 1200px;*/
+    margin: 0 auto;
     padding: 0 1rem;
     opacity: 100%;
 }
@@ -447,6 +464,38 @@ main {
         gap: 1rem;
     }
 
+    .nav-pills {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .nav-actions {
+        justify-content: flex-start;
+    }
+
+    .site-title {
+        font-size: 1.6rem;
+    }
+
+    .site-logo {
+        transform: scale(0.8);
+    }
+
+    .site-logo img {
+        transform: scale(1.3);
+    }
+
+}
+
+main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
     justify-content: center;
     min-height: calc(100vh - 80px);
     margin-bottom: 2rem;
