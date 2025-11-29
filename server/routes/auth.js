@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { createClient } = require("@supabase/supabase-js");
 
+// Import Supabase client (correct place)
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY   // ✅ FULL PERMISSION KEY
@@ -11,8 +11,9 @@ const supabase = createClient(
 
 module.exports = supabase;
 
-
-// Register
+// ================================
+//  SIGNUP
+// ================================
 router.post('/signup', async (req, res) => {
     try {
         const { firstName, lastName, email, phone, password } = req.body;
@@ -47,9 +48,9 @@ router.post('/signup', async (req, res) => {
 
         if (error) throw error;
 
-        // Create token
+        // Create JWT token
         const payload = { user: { id: newUser.id } };
-        jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
             res.json({ token });
         });
@@ -60,12 +61,14 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-// Login
+
+// ================================
+//  LOGIN
+// ================================
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find user
         const { data: user } = await supabase
             .from('users')
             .select('*')
@@ -74,13 +77,13 @@ router.post('/login', async (req, res) => {
 
         if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
 
-        // Check password
+        // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ msg: 'Invalid Credentials' });
 
-        // Create token
+        // Create JWT
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
             res.json({ token });
         });
@@ -91,45 +94,129 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Get User Profile
+
+// ================================
+//  SEND OTP
+// ================================
+router.post('/send-otp', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        const { error } = await supabase
+            .from('otp_codes')
+            .insert({ email, otp });
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ msg: "Failed to send OTP" });
+        }
+
+        // NOTE: In production REMOVE otp from response
+        res.json({ msg: "OTP sent successfully", otp });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+});
+
+
+// ================================
+//  VERIFY OTP
+// ================================
+router.post('/verify-otp', async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        const { data } = await supabase
+            .from('otp_codes')
+            .select('*')
+            .eq('email', email)
+            .eq('otp', otp)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        if (!data) return res.status(400).json({ msg: "Invalid OTP" });
+
+        res.json({ msg: "OTP verified" });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+});
+
+
+// ================================
+//  RESET PASSWORD
+// ================================
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+
+        const { error } = await supabase
+            .from('users')
+            .update({ password: hashed })
+            .eq('email', email);
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ msg: "Failed to reset password" });
+        }
+
+        res.json({ msg: "Password reset successful" });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+});
+
+
+// ================================
+//  GET USER PROFILE
+// ================================
 router.get('/profile', async (req, res) => {
     try {
         const token = req.header('x-auth-token');
         if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
 
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-            req.user = decoded.user;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded.user;
 
-            const { data: user, error } = await supabase
-                .from('users')
-                .select('id, first_name, last_name, email, phone, points, level, profile_pic')
-                .eq('id', req.user.id)
-                .single();
+        const { data: user } = await supabase
+            .from('users')
+            .select('id, first_name, last_name, email, phone, points, level, profile_pic')
+            .eq('id', req.user.id)
+            .single();
 
-            if (error || !user) return res.status(404).json({ msg: 'User not found' });
+        if (!user) return res.status(404).json({ msg: "User not found" });
 
-            // Map back to camelCase for frontend compatibility
-            const userResponse = {
-                _id: user.id, // Frontend might expect _id
-                id: user.id,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                email: user.email,
-                phone: user.phone,
-                points: user.points,
-                level: user.level,
-                profilePic: user.profile_pic
-            };
+        const mapped = {
+            id: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            email: user.email,
+            phone: user.phone,
+            points: user.points,
+            level: user.level,
+            profilePic: user.profile_pic
+        };
 
-            res.json(userResponse);
-        } catch (e) {
-            res.status(400).json({ msg: 'Token is not valid' });
-        }
+        res.json(mapped);
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 });
 
+
+// Export router (IMPORTANT)
 module.exports = router;
