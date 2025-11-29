@@ -24,14 +24,15 @@ class API {
             this.baseUrl = '/api';
         }
 
-        // Warning for deployment
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && this.baseUrl.includes('localhost')) {
-            console.error('🚨 CRITICAL: You are running on a public domain but your API URL is pointing to localhost!');
-            console.error('   Please update the <meta name="api-base-url"> tag in index.html to point to your deployed backend URL.');
-            alert('Configuration Error: API URL is pointing to localhost. Please check console for details.');
-        }
-
         this.token = localStorage.getItem('token');
+
+        // Validation for Production Deployment
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:') {
+            if (this.baseUrl.includes('your-backend-url.com')) {
+                console.error('CRITICAL: API URL not configured!');
+                alert('SITE CONFIG ERROR: Please update the "api-base-url" meta tag in index.html with your actual backend URL.');
+            }
+        }
     }
 
     async _handleResponse(res) {
@@ -251,7 +252,19 @@ async function loadPapers() {
         renderPapers(papers);
     } catch (e) {
         console.error("Failed to load papers:", e);
-        papersGrid.innerHTML = '<p class="text-muted text-center">Failed to connect to server. Ensure backend is running.</p>';
+        papersGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: rgba(239, 68, 68, 0.1); border-radius: 1rem; border: 1px solid rgba(239, 68, 68, 0.2);">
+                <h3 style="color: #ef4444; margin-bottom: 1rem;">⚠️ Connection Failed</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">Could not connect to the backend server.</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">
+                    <strong>If you are the developer:</strong><br>
+                    1. Check if the backend is running.<br>
+                    2. If deployed, check if "api-base-url" meta tag in index.html is correct.<br>
+                    3. Check browser console for details.
+                </p>
+                <button onclick="location.reload()" class="btn btn-outline" style="margin-top: 1rem;">Retry Connection</button>
+            </div>
+        `;
     }
 }
 
