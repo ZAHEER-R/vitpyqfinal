@@ -3,7 +3,15 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const supabase = require('../supabaseClient');
+const { createClient } = require("@supabase/supabase-js");
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY   // ✅ FULL PERMISSION KEY
+);
+
+module.exports = supabase;
+
 
 // Multer Config - Use Memory Storage for Supabase Upload
 const storage = multer.memoryStorage();
