@@ -54,6 +54,56 @@
     <script src="https://kit.fontawesome.com/efc246ce45.js" crossorigin="anonymous"></script>
 </head>
 
+<!-- Sitelinks Searchbox + Navigation Schema for Google & Bing -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "VIT PYQ's",
+  "url": "https://vitpyqpapers.in/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://vitpyqpapers.in/?search={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- Navigation Schema for Sitelinks -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": [
+    {
+      "@type": "SiteNavigationElement",
+      "position": 1,
+      "name": "Home",
+      "url": "https://vitpyqpapers.in/#homeSection"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 2,
+      "name": "Upload Papers",
+      "url": "https://vitpyqpapers.in/#uploadSection"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 3,
+      "name": "Profile",
+      "url": "https://vitpyqpapers.in/#profileSection"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 4,
+      "name": "Search PYQs",
+      "url": "https://vitpyqpapers.in/#search"
+    }
+  ]
+}
+</script>
+
+    
 <body>
     <!-- Interactive Background Bubbles -->
     <canvas id="bubbleCanvas"></canvas>
