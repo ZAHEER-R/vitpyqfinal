@@ -10,7 +10,9 @@ window.FIREBASE_CONFIG = {
   storageBucket: "vitpyq-s.firebasestorage.app",
   messagingSenderId: "414027477638",
   appId: "1:414027477638:web:1d7cf07eb06b454f715707",
-  measurementId: "G-9PJWN73MBB"
+  measurementId: "G-9PJWN73MBB",
+  // Managed by Firebase Authentication -> Google provider.
+  googleClientId: "666807719590-n1fdplj231t8sgjojfjsc7bmo5q8pfur.apps.googleusercontent.com"
 };
 
 /** Supabase Storage: create a public bucket named "papers" and paste these values. */

@@ -9,7 +9,6 @@ const BADGE_ICON = {
 };
 const BADGE_ORDER = ['bronze','silver','gold','platinum','diamond','ruby'];
 const ADMIN_EMAIL = 'admin@vitstudent.ac.in';
-const ADMIN_PASS = 'admin2026';
 const YEARS = [];
 for (let y = 2026; y >= 2015; y--) YEARS.push(String(y));
 const CAMPUSES = ['Vellore','Chennai','Amravati','Bhopal','Bangalore'];
@@ -37,7 +36,7 @@ function load() {
   if (!state.users.find(u => u.email === ADMIN_EMAIL)) {
     state.users.push({
       id: 'admin', firstName: 'Admin', lastName: 'VITPYQ', username: 'admin',
-      branch: 'Admin', email: ADMIN_EMAIL, password: ADMIN_PASS,
+      branch: 'Admin', email: ADMIN_EMAIL,
       displayName: 'Admin', avatar: '', badge: 'diamond',
       vcash: 999999, uploads: 0, downloads: 0, visits: 0, isAdmin: true, items: [], friends: [], requests: []
     });

@@ -6,6 +6,11 @@
   const cfg = global.FIREBASE_CONFIG || {};
   const ready = cfg.apiKey && cfg.apiKey !== 'YOUR_API_KEY';
 
+  function authSetupError(message) {
+    const host = global.location?.hostname || 'current host';
+    return new Error(`${message} Current host: ${host}. Add only the hostname (for GitHub Pages: zaheerr.github.io) in Firebase Authentication > Settings > Authorized domains.`);
+  }
+
   global.vitAuthRules = {
     isVitStudentEmail(email) {
       const d = (email || '').split('@')[1]?.toLowerCase() || '';
@@ -55,16 +60,32 @@
 
     /** Google Sign-In — rejects non-@vitstudent.ac.in */
     async signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account', hd: 'vitstudent.ac.in' });
-      const result = await auth.signInWithPopup(provider);
-      const email = result.user.email || '';
-      if (!global.vitAuthRules.canGoogleSignIn(email)) {
-        await auth.signOut();
-        throw new Error('Google Sign-In is only for @vitstudent.ac.in');
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account', hd: 'vitstudent.ac.in' });
+        const result = await auth.signInWithPopup(provider);
+        const email = result.user.email || '';
+        if (!global.vitAuthRules.canGoogleSignIn(email)) {
+          await auth.signOut();
+          throw new Error('Google Sign-In is only for @vitstudent.ac.in');
+        }
+        await this.ensureUserDoc(result.user);
+        return result.user;
+      } catch (err) {
+        if (err.code === 'auth/operation-not-allowed') {
+          throw new Error('Google Sign-In is disabled. Enable Google in Firebase Console > Authentication > Sign-in method.');
+        }
+        if (err.code === 'auth/unauthorized-domain') {
+          throw authSetupError('This website domain is not authorized.');
+        }
+        if (err.code === 'auth/popup-blocked') {
+          throw new Error('The browser blocked the Google login popup. Allow popups for this website and try again.');
+        }
+        if (err.code === 'auth/popup-closed-by-user') {
+          throw new Error('Google login was cancelled.');
+        }
+        throw err;
       }
-      await this.ensureUserDoc(result.user);
-      return result.user;
     },
 
     /** Register with Gmail + password only */
@@ -78,9 +99,22 @@
     },
 
     async loginEmail(email, password) {
-      const cred = await auth.signInWithEmailAndPassword(email, password);
-      await this.ensureUserDoc(cred.user);
-      return cred.user;
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        await this.ensureUserDoc(cred.user);
+        return cred.user;
+      } catch (err) {
+        if (err.code === 'auth/configuration-not-found') {
+          throw authSetupError('Firebase Authentication is not enabled for this project. Open Firebase Console > Authentication > Get started, then enable Email/Password.');
+        }
+        if (err.code === 'auth/operation-not-allowed') {
+          throw authSetupError('Email/Password sign-in is disabled. Enable it in Firebase Console > Authentication > Sign-in method.');
+        }
+        if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+          throw new Error('Incorrect email or password.');
+        }
+        throw err;
+      }
     },
 
     async logout() {
@@ -94,33 +128,32 @@
     async ensureUserDoc(user, extra = {}) {
       const ref = db.collection('users').doc(user.uid);
       const snap = await ref.get();
-      if (!snap.exists) {
-        const uname = (user.email || 'user').split('@')[0].replace(/[^a-z0-9]/gi, '').slice(0, 16) || 'user';
-        await ref.set({
-          uid: user.uid,
-          email: user.email,
-          displayName: extra.displayName || user.displayName || uname,
-          username: (extra.username || uname).toLowerCase(),
-          firstName: extra.firstName || '',
-          lastName: extra.lastName || '',
-          branch: extra.branch || '',
-          avatar: user.photoURL || '',
-          badge: 'bronze',
-          verified: false,
-          vcash: 0,
-          uploads: 0,
-          downloads: 0,
-          visits: 1,
-          isAdmin: false,
-          items: [],
-          activeItems: [],
-          friends: [],
-          requests: [],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } else {
-        await ref.update({ visits: firebase.firestore.FieldValue.increment(1) });
-      }
+      const uname = (user.email || 'user').split('@')[0].replace(/[^a-z0-9]/gi, '').slice(0, 16) || 'user';
+      const defaults = {
+        uid: user.uid,
+        email: user.email || '',
+        displayName: extra.displayName || user.displayName || uname,
+        username: (extra.username || uname).toLowerCase(),
+        firstName: extra.firstName || '',
+        lastName: extra.lastName || '',
+        branch: extra.branch || '',
+        avatar: user.photoURL || '',
+        badge: 'bronze',
+        verified: false,
+        vcash: 0,
+        uploads: 0,
+        downloads: 0,
+        visits: snap.exists ? firebase.firestore.FieldValue.increment(1) : 1,
+        items: [],
+        activeItems: [],
+        friends: [],
+        requests: [],
+        likedPapers: [],
+        uploadHistory: [],
+        systemNotifs: []
+      };
+      if (!snap.exists) defaults.isAdmin = false;
+      await ref.set(defaults, { merge: true });
       return (await ref.get()).data();
     },
 
