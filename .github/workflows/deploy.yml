@@ -1,0 +1,56 @@
+# Deploy VIT PYQ's to Firebase Hosting + Rules + Functions
+# Triggers on push to main or master (branch deploy — no Railway/Render/Vite)
+#
+# Required GitHub Secrets:
+#   FIREBASE_TOKEN     → run: firebase login:ci   (paste token)
+#   FIREBASE_PROJECT_ID → your Firebase project id
+#
+# Optional Secrets for OTP email (Functions):
+#   SMTP_USER, SMTP_PASS  (Gmail app password)
+
+name: Deploy Firebase
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install Cloud Functions deps
+        working-directory: functions
+        run: npm ci || npm install
+
+      - name: Write .firebaserc from secret
+        run: |
+          echo "{\"projects\":{\"default\":\"${{ secrets.FIREBASE_PROJECT_ID }}\"}}" > .firebaserc
+          test -n "${{ secrets.FIREBASE_PROJECT_ID }}" || (echo "Missing FIREBASE_PROJECT_ID secret" && exit 1)
+
+      - name: Deploy Hosting + Firestore rules + Storage rules + Functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        run: |
+          firebase deploy \
+            --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+            --token "$FIREBASE_TOKEN" \
+            --non-interactive \
+            --force

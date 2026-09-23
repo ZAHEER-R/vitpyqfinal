@@ -1,0 +1,12 @@
+{
+  "name": "vitpyq-full-starter",
+  "private": true,
+  "description": "VIT PYQ's — frontend + Firebase backend starter (Hosting, Auth, Firestore, Storage, Functions)",
+  "scripts": {
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage",
+    "deploy:functions": "firebase deploy --only functions",
+    "emulators": "firebase emulators:start"
+  }
+}
