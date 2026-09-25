@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIT PYQ's — For VITians</title>
+  <meta name="description" content="VIT PYQ Papers — CAT1, CAT2, FAT across all campuses. Upload, download, earn ZX." />
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="neuralCanvas"></canvas>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo logo-lg" onclick="showSection('home'); return false;">
+        <span class="logo-badge">VIT</span>
+        <span class="logo-text">PYQ's</span>
+      </a>
+      <button type="button" class="nav-home-btn" onclick="showSection('home')" title="Home" aria-label="Home">
+        <i class="fas fa-home"></i>
+      </button>
+      <div class="nav-search desktop-only">
+        <i class="fas fa-search"></i>
+        <input type="text" id="globalSearch" placeholder="Search papers by subject or code..." oninput="liveSearchHome(this.value)" autocomplete="off" />
+      </div>
+      <div class="nav-right">
+        <div class="nav-icon-btn" id="notifBtn" onclick="toggleNotifPanel()" title="Notifications" style="display:none;">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot" id="notifDot" style="display:none;">0</span>
+        </div>
+        <div class="user-chip desktop-only" id="userChip" onclick="navTo('profile')" style="display:none;" title="My Profile">
+          <div class="avatar-wrap">
+            <img id="navAvatar" src="" alt="" />
+            <span class="badge-pin" id="navBadge"><i class="fas fa-medal"></i></span>
+          </div>
+          <span id="navUserName">User</span>
+        </div>
+        <button class="btn-ghost desktop-only" id="loginBtn" onclick="showSection('auth')"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </nav>
+  <!-- Friends search dropdown -->
+  <div class="dropdown-panel" id="friendsSearchPanel">
+    <div class="dropdown-head">Search Friends</div>
+    <input type="text" id="friendSearchInput" placeholder="Username or name..." oninput="searchFriends(this.value)" />
+    <div id="friendSearchResults" class="dropdown-list"></div>
+  </div>
+  <!-- Notifications -->
+  <div class="dropdown-panel" id="notifPanel">
+    <div class="dropdown-head notif-head">
+      <span><i class="fas fa-bell"></i> Notifications</span>
+      <button type="button" class="btn-ghost sm" onclick="clearClearableNotifs()" title="Clear non-pinned"><i class="fas fa-broom"></i> Clear</button>
+    </div>
+    <div id="notifList" class="dropdown-list"></div>
+  </div>
+
+
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <div class="side-profile" id="sideProfile" style="display:none;">
+        <div class="avatar-wrap lg" onclick="navTo('profile')">
+          <img id="sideAvatar" src="" alt="" />
+          <span class="badge-pin" id="sideBadge"><i class="fas fa-medal"></i></span>
+        </div>
+        <div onclick="navTo('profile')" style="cursor:pointer;">
+          <strong id="sideName">User</strong>
+          <div class="muted" id="sideVcash">0 ZX</div>
+        </div>
+      </div>
+      <div id="sideGuest" style="display:block;">
+        <button class="btn-primary full" onclick="showSection('auth'); closeMenu();"><i class="fas fa-sign-in-alt"></i> Login / Register</button>
+      </div>
+      <button class="close-menu" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="side-links">
+      <a href="#" onclick="navTo('home')"><i class="fas fa-home"></i> Home</a>
+      <a href="#" onclick="navTo('papers')"><i class="fas fa-file-alt"></i> All Papers</a>
+      <a href="#" onclick="navTo('upload')"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+      <a href="#" onclick="navTo('store')"><i class="fas fa-store"></i> Store</a>
+      <a href="#" onclick="navTo('leaderboard')"><i class="fas fa-trophy"></i> Leaderboard</a>
+      <a href="#" onclick="navTo('chat')"><i class="fas fa-comments"></i> Global Chat</a>
+      <a href="#" onclick="navTo('developer')"><i class="fas fa-code"></i> Developer</a>
+      <a href="#" id="adminLink" onclick="navTo('admin')" style="display:none;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+      <a href="#" id="profileLink" onclick="navTo('profile')" style="display:none;"><i class="fas fa-user"></i> My Profile</a>
+      <a href="#" id="logoutLink" onclick="logout()" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+  </div>
+  <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
+
+  <main class="main">
+
+    <!-- HOME -->
+    <section id="home" class="section active">
+      <div class="hero">
+        <div class="hero-content">
+          <div class="home-quote-ticker" id="homeQuoteTicker">
+            <i class="fas fa-quote-left"></i>
+            <div class="home-quote-body">
+              <p id="homeQuoteText">Loading inspiration...</p>
+              <span class="home-quote-author" id="homeQuoteAuthor"></span>
+            </div>
+          </div>
+          <h1>Join the <span class="gradient">VIT PYQ's</span> Community</h1>
+          <p class="hero-sub">CAT 1 · CAT 2 · FAT papers across every campus</p>
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-num purple" id="statStudents">0</div>
+              <div class="stat-label">Students Using</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num green" id="statPapers">0</div>
+              <div class="stat-label">Papers Shared</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num orange">100%</div>
+              <div class="stat-label">Flexible & Free</div>
+            </div>
+          </div>
+          <div class="campus-pills">
+            <span class="campus-pill" data-campus="Vellore" onclick="filterCampusHome('Vellore')"><i class="fas fa-university"></i> Vellore</span>
+            <span class="campus-pill" data-campus="Chennai" onclick="filterCampusHome('Chennai')"><i class="fas fa-building"></i> Chennai</span>
+            <span class="campus-pill" data-campus="Amaravathi" onclick="filterCampusHome('Amaravathi')"><i class="fas fa-landmark"></i> Amaravathi</span>
+            <span class="campus-pill" data-campus="Bhopal" onclick="filterCampusHome('Bhopal')"><i class="fas fa-city"></i> Bhopal</span>
+            <span class="campus-pill" data-campus="Bangalore" onclick="filterCampusHome('Bangalore')"><i class="fas fa-building"></i> Bangalore</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container home-layout">
+        <!-- Live search (homepage) -->
+        <div class="home-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="homeSearch" placeholder="Type to search papers instantly..." oninput="liveSearchHome(this.value)" autocomplete="off" />
+        </div>
+
+        <div class="home-filter-row">
+          <button type="button" class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterBar()">
+            <i class="fas fa-sliders-h"></i> Filters
+          </button>
+          <div class="filter-bar" id="filterBar">
+            <div class="filter-bar-rows">
+              <div class="filter-row">
+                <span class="fg-label">Exam</span>
+                <label class="fchip"><input type="checkbox" data-filter="cat" value="CAT1" onchange="applyHomeFilters()" /> CAT 1</label>
+                <label class="fchip"><input type="checkbox" data-filter="cat" value="CAT2" onchange="applyHomeFilters()" /> CAT 2</label>
+                <label class="fchip"><input type="checkbox" data-filter="cat" value="FAT" onchange="applyHomeFilters()" /> FAT</label>
+              </div>
+              <div class="filter-row">
+                <span class="fg-label">Sem</span>
+                <label class="fchip"><input type="checkbox" data-filter="sem" value="Fall" onchange="applyHomeFilters()" /> <i class="fas fa-leaf"></i> Fall</label>
+                <label class="fchip"><input type="checkbox" data-filter="sem" value="Winter" onchange="applyHomeFilters()" /> <i class="fas fa-snowflake"></i> Winter</label>
+              </div>
+              <div class="filter-row">
+                <span class="fg-label">Year</span>
+                <span id="yearChecks" class="year-chips"></span>
+              </div>
+              <div class="filter-row filter-actions-row">
+                <button type="button" class="btn-ghost sm" onclick="clearHomeFilters()">Clear</button>
+                <button type="button" class="filter-close-x" onclick="toggleFilterBar(false)" aria-label="Close"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact New Uploads toggle -->
+        <div class="new-uploads-bar">
+          <button type="button" class="new-uploads-toggle" id="newUploadsToggle" onclick="toggleNewUploadsPanel()">
+            <i class="fas fa-bolt"></i> New Uploads
+            <span class="new-upload-badge" id="newUploadBadge" style="display:none;">0</span>
+            <i class="fas fa-chevron-down toggle-arrow" id="newUploadsArrow"></i>
+          </button>
+          <div id="newHighlight" class="new-highlight compact" style="display:none;">
+            <div class="new-highlight-scroll">
+              <div class="carousel-track" id="newTrack"></div>
+            </div>
+            <div class="new-scroll-hint">
+              <span class="scroll-arrows"><i class="fas fa-chevron-down"></i><i class="fas fa-chevron-down"></i></span>
+              Scroll
+            </div>
+          </div>
+        </div>
+
+        <div class="home-papers-area">
+            <div class="carousel-wrap" id="homeCarousel">
+              <button class="carousel-arrow left" onclick="carouselPrev()" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+              <div class="carousel-track" id="carouselTrack"></div>
+              <button class="carousel-arrow right" onclick="carouselNext()" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <div id="homePapersEmpty" class="empty-state" style="display:none;">
+              <i class="fas fa-folder-open"></i>
+              <p>No papers found. Message in global chat for someone to upload.</p>
+            </div>
+        </div>
+
+        <!-- Real-time Student Feedback -->
+        <div class="feedback-section" id="feedbackSection">
+          <h2 class="section-title feedback-heading"><i class="fas fa-comments"></i> Real-time Student Feedback</h2>
+          <div class="feedback-stage">
+            <div class="feedback-credits" id="feedbackCredits"></div>
+          </div>
+          <div class="feedback-actions">
+            <button type="button" class="btn-primary" onclick="openFeedbackForm()"><i class="fas fa-pen"></i> Send Feedback</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ALL PAPERS -->
+    <section id="papers" class="section">
+      <div class="container">
+        <h2 class="section-title">All Papers</h2>
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="paperSearch" placeholder="Search by subject, course code..." oninput="renderPapers()" />
+        </div>
+        <div id="papersGrid" class="papers-grid"></div>
+        <div id="papersEmpty" class="empty-state" style="display:none;">
+          <i class="fas fa-folder-open"></i>
+          <p>No papers found. Message in global chat for requesting upload.<br>Our ZX Team / Community members will upload them soon.<br>We love your patience for us.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- UPLOAD -->
+    <section id="upload" class="section">
+      <div class="container narrow">
+        <div class="card">
+          <h2><i class="fas fa-cloud-upload-alt"></i> Upload Question Paper</h2>
+          <p class="muted">Earn <strong>1,000 ZX</strong> per paper. Preview before submitting.</p>
+          <form id="uploadForm" onsubmit="handleUpload(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Subject *</label>
+                <input type="text" id="upSubject" required placeholder="e.g. Digital Logic Design" />
+              </div>
+              <div class="form-group">
+                <label>Course Code *</label>
+                <input type="text" id="upCode" required placeholder="e.g. ECE2001" />
+              </div>
+              <div class="form-group">
+                <label>Slot</label>
+                <input type="text" id="upSlot" placeholder="e.g. A1 / Theory" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Year *</label>
+                <select id="upYear" required></select>
+              </div>
+              <div class="form-group">
+                <label>Semester *</label>
+                <select id="upSem" required>
+                  <option value="Fall">Fall Semester</option>
+                  <option value="Winter">Winter Semester</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Exam Type *</label>
+                <select id="upCat" required>
+                  <option value="CAT1">CAT 1</option>
+                  <option value="CAT2">CAT 2</option>
+                  <option value="FAT">FAT</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Campus *</label>
+              <select id="upCampus" required>
+                <option value="Vellore">Vellore</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Amaravathi">Amaravathi</option>
+                <option value="Bhopal">Bhopal</option>
+                <option value="Bangalore">Bangalore</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>File (PDF / Image) *</label>
+              <div class="dropzone" id="dropzone" onclick="document.getElementById('upFile').click()">
+                <i class="fas fa-file-upload"></i>
+                <p id="dropText">Click or drop PDF / image here</p>
+                <input type="file" id="upFile" accept=".pdf,image/*" hidden required />
+              </div>
+            </div>
+            <div id="previewBox" class="preview-box" style="display:none;">
+              <div class="preview-header">
+                <span>Preview</span>
+                <button type="button" class="btn-ghost sm" onclick="clearPreview()"><i class="fas fa-times"></i> Clear</button>
+              </div>
+              <iframe id="pdfPreview" class="pdf-preview" title="PDF Preview"></iframe>
+              <img id="imgPreview" class="img-preview" alt="Preview" style="display:none;" />
+            </div>
+            <button type="submit" class="btn-primary full" id="uploadBtn"><i class="fas fa-upload"></i> Upload & Earn 1,000 ZX</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORE -->
+    <section id="store" class="section">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-store"></i> ZX Store</h2>
+        <p class="center muted">Spend ZX on badges and profile design items. Default badge is Bronze.</p>
+        <div class="vcash-banner" id="storeVcash">Your balance: <strong>0</strong> ZX</div>
+        <h3 class="store-subtitle">Badges</h3>
+        <div class="store-grid" id="storeBadgesGrid">
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-medal" style="color:#c0c0c0;"></i></div>
+            <h3>Silver Badge</h3>
+            <p class="price">15,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('silver',15000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-medal" style="color:#fbbf24;"></i></div>
+            <h3>Gold Badge</h3>
+            <p class="price">30,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('gold',30000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-gem" style="color:#a78bfa;"></i></div>
+            <h3>Platinum Badge</h3>
+            <p class="price">35,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('platinum',35000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-gem" style="color:#22d3ee;"></i></div>
+            <h3>Diamond Badge</h3>
+            <p class="price">45,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('diamond',45000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-gem" style="color:#e11d48;"></i></div>
+            <h3>Ruby Badge</h3>
+            <p class="price">55,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('ruby',55000)">Buy</button>
+          </div>
+          <div class="store-card store-card-premium">
+            <div class="badge-preview"><i class="fas fa-check-circle" style="color:#1d9bf0;"></i></div>
+            <h3>Verified <i class="fas fa-check-circle" style="color:#1d9bf0;font-size:0.85rem;"></i></h3>
+            <p class="price">50,000 ZX</p>
+            <p class="muted" style="font-size:0.72rem;margin-bottom:0.5rem;">Premium blue tick</p>
+            <button class="btn-outline" onclick="buyVerified()">Buy</button>
+          </div>
+        </div>
+        <h3 class="store-subtitle" style="margin-top:2rem;">Design Studio</h3>
+        <div class="store-grid" id="storeDesignGrid">
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-border-all" style="color:#f472b6;"></i></div>
+            <h3>Rainbow Frame</h3>
+            <p class="price">8,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('frame_rainbow',8000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-sun" style="color:#fbbf24;"></i></div>
+            <h3>Glow Effect</h3>
+            <p class="price">12,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('glow',12000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-moon" style="color:#94a3b8;"></i></div>
+            <h3>Dark Theme Pack</h3>
+            <p class="price">10,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('dark_pack',10000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-signature" style="color:#34d399;"></i></div>
+            <h3>Custom Title</h3>
+            <p class="price">20,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('title',20000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-circle-notch" style="color:#22d3ee;"></i></div>
+            <h3>Neon Ring</h3>
+            <p class="price">9,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('neon_ring',9500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-star" style="color:#f59e0b;"></i></div>
+            <h3>Star Pad</h3>
+            <p class="price">7,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('star_pad',7000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-fire" style="color:#ef4444;"></i></div>
+            <h3>Fire Frame</h3>
+            <p class="price">14,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('fire_frame',14000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-snowflake" style="color:#67e8f9;"></i></div>
+            <h3>Frost Effect</h3>
+            <p class="price">11,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('frost',11000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-heart" style="color:#fb7185;"></i></div>
+            <h3>Heart Pad</h3>
+            <p class="price">6,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('heart_pad',6500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-bolt" style="color:#a78bfa;"></i></div>
+            <h3>Pulse Glow</h3>
+            <p class="price">13,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('pulse',13000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-rainbow" style="color:#34d399;"></i></div>
+            <h3>Aurora Frame</h3>
+            <p class="price">16,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('aurora_frame',16000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-square" style="color:#94a3b8;"></i></div>
+            <h3>Glass Pad</h3>
+            <p class="price">8,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('glass_pad',8500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-crown" style="color:#fbbf24;"></i></div>
+            <h3>Crown Icon</h3>
+            <p class="price">22,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('crown',22000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-water" style="color:#38bdf8;"></i></div>
+            <h3>Wave Glow</h3>
+            <p class="price">11,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('wave_glow',11500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-border-all" style="color:#c084fc;"></i></div>
+            <h3>Pixel Border</h3>
+            <p class="price">9,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('pixel_border',9000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="store-icon"><i class="fas fa-sparkles"></i></div>
+            <h4>Sparkle Trail</h4>
+            <p class="muted">Subtle sparkle on avatar</p>
+            <div class="store-price">10,500 ZX</div>
+            <button class="btn-outline" onclick="buyItem('sparkle',10500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="store-icon"><i class="fas fa-moon"></i></div>
+            <h4>Midnight Mode</h4>
+            <p class="muted">Deep night profile theme</p>
+            <div class="store-price">12,500 ZX</div>
+            <button class="btn-outline" onclick="buyItem('midnight',12500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="store-icon"><i class="fas fa-bolt"></i></div>
+            <h4>Lightning Edge</h4>
+            <p class="muted">Electric border pulse</p>
+            <div class="store-price">15,000 ZX</div>
+            <button class="btn-outline" onclick="buyItem('lightning',15000)">Buy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section id="leaderboard" class="section">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-trophy"></i> Leaderboard</h2>
+        <div id="lbHighlights" class="lb-highlights" style="display:none;"></div>
+        <div class="tabs">
+          <button class="tab active" data-tab="uploads" onclick="switchLbTab('uploads')">Most Uploads</button>
+          <button class="tab" data-tab="vcash" onclick="switchLbTab('vcash')">Most ZX</button>
+          <button class="tab" data-tab="downloads" onclick="switchLbTab('downloads')">Most Downloads</button>
+        </div>
+        <div id="leaderboardList" class="leader-list"></div>
+        <p class="center muted" id="lbEmpty" style="display:none;margin-top:1.5rem;">No users yet.</p>
+      </div>
+    </section>
+
+    <!-- ZX CHAT -->
+    <section id="chat" class="section">
+      <div class="container narrow">
+        <h2 class="section-title"><i class="fas fa-comments"></i> ZX Global Chat</h2>
+        <p class="center muted">Public chat — request papers, help others.</p>
+        <div class="chat-box card" id="globalChatBox">
+          <div id="chatMessages" class="chat-messages"></div>
+          <form class="chat-input-row" onsubmit="sendChat(event)">
+            <input type="text" id="chatInput" placeholder="Type a message or paper request..." maxlength="500" required />
+            <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+          </form>
+          <div class="chat-toolbar">
+            <button type="button" class="btn-ghost sm" onclick="clearUserChat()"><i class="fas fa-broom"></i> Clear Chat</button>
+            <span class="muted" style="font-size:0.75rem;">Admin messages stay pinned</span>
+          </div>
+        </div>
+        <div class="personal-chat-toggle">
+          <button type="button" class="btn-outline full" onclick="togglePersonalChat()"><i class="fas fa-user-friends"></i> Personal &amp; Support Chat</button>
+        </div>
+        <div class="card personal-chat-panel" id="personalChatPanel" style="display:none;">
+          <div class="pc-layout">
+            <div class="pc-friends" id="pcFriendsList"></div>
+            <div class="pc-thread">
+              <div class="pc-thread-head" id="pcThreadHead">Select a chat</div>
+              <div class="chat-messages" id="pcMessages"></div>
+              <form class="chat-input-row" onsubmit="sendPersonalChat(event)">
+                <input type="text" id="pcInput" placeholder="Message..." maxlength="500" />
+                <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVELOPER -->
+    <section id="developer" class="section">
+      <div class="container narrow">
+        <div class="card developer-card">
+          <div class="dev-photo-wrap">
+            <img src="developer.jpg" alt="Zaheer R" class="dev-photo" />
+            <span class="badge-pin diamond"><i class="fas fa-gem"></i></span>
+          </div>
+          <h2>Zaheer R - Zr7</h2>
+          <p class="dev-role">Student · VIT Vellore</p>
+          <p class="dev-bio">Engineer and creator of VIT PYQ's. Building community-driven app of academic excellence for vitians to help.</p>
+          <div class="dev-meta">
+            <span><i class="fas fa-university"></i> VITian</span>
+            <span><i class="fas fa-graduation-cap"></i> CSE</span>
+            <span><i class="fas fa-code"></i> Engineering</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin" class="section">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+        <div class="tabs" style="margin-bottom:1rem;">
+          <button class="tab active" id="adminTabPapers" onclick="switchAdminTab('papers')">Papers</button>
+          <button class="tab" id="adminTabUsers" onclick="switchAdminTab('users')">Users</button>
+          <button class="tab" id="adminTabFeedback" onclick="switchAdminTab('feedback')">Student Feedback</button>
+        </div>
+        <div id="adminPapersPanel">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="adminPaperSearch" placeholder="Search papers by subject, code, campus..." oninput="renderAdmin()" />
+          </div>
+          <div id="adminPapers" class="admin-list"></div>
+        </div>
+        <div id="adminUsersPanel" style="display:none;">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="adminUserSearch" placeholder="Search users by name, username, email..." oninput="renderAdminUsers()" />
+          </div>
+          <div id="adminUsers" class="admin-list"></div>
+        </div>
+        <div id="adminFeedbackPanel" style="display:none;">
+          <p class="muted" style="margin-bottom:0.75rem;">All student feedback. Delete removes it permanently from the homepage.</p>
+          <div id="adminFeedbackList" class="admin-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vault -->
+    <div class="modal" id="vaultModal">
+      <div class="modal-content vault-modal">
+        <button class="modal-close" onclick="closeVault()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-vault"></i> Vault</h3>
+        <p class="muted" style="margin:0.35rem 0 0.85rem;font-size:0.85rem;">Owned items — Apply or Remove anytime without rebuying.</p>
+        <div id="vaultItems" class="vault-items"></div>
+        <div id="vaultTitleEditor" class="form-group" style="display:none;margin-top:1rem;">
+          <label>Custom Title text (Instagram-style note)</label>
+          <input type="text" id="vaultTitleInput" maxlength="40" placeholder="e.g. Sharing knowledge @ VIT" />
+          <button type="button" class="btn-primary sm" style="margin-top:0.5rem;" onclick="saveCustomTitle()">Save title</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin message before terminate -->
+    <div class="modal" id="termModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeTermModal()"><i class="fas fa-times"></i></button>
+        <h3>Message &amp; Terminate</h3>
+        <p class="muted" id="termUserLabel" style="margin:0.5rem 0 0.75rem;"></p>
+        <div class="form-group">
+          <label>Personal message to user (required before terminate)</label>
+          <textarea id="termMessage" rows="3" placeholder="Explain why..." style="width:100%;padding:0.65rem;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);resize:vertical;"></textarea>
+        </div>
+        <button class="btn-primary full" onclick="sendTermMessageOnly()" style="margin-bottom:0.5rem;">Send message only</button>
+        <button class="btn-ghost full" style="color:var(--red);border-color:var(--red);" onclick="confirmTerminate()">Terminate account</button>
+      </div>
+    </div>
+
+    <!-- AUTH -->
+    <section id="auth" class="section">
+      <div class="container narrow">
+        <div class="card auth-card">
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab" onclick="switchAuth('login')">Login</button>
+            <button class="auth-tab" id="regTab" onclick="switchAuth('register')">Register</button>
+          </div>
+          <button type="button" class="btn-google" onclick="googleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18" />
+            Continue with Google (@vitstudent.ac.in only)
+          </button>
+          <div class="auth-divider"><span>or</span></div>
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="loginEmail" required placeholder="you@gmail.com / yahoo / outlook…" />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="loginPass" required />
+            </div>
+            <button type="submit" class="btn-primary full">Login</button>
+            <button type="button" class="btn-link" onclick="showForgot()">Forgot password?</button>
+          </form>
+          <form id="forgotForm" class="hidden" onsubmit="handleForgot(event)">
+            <p class="muted" style="margin-bottom:0.75rem;font-size:0.88rem;">Enter the email you registered with (Gmail, Yahoo, Outlook, etc.). An OTP will be generated so you can set a new password. VIT student accounts use Google sign-in only.</p>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="forgotEmail" required placeholder="you@gmail.com" />
+            </div>
+            <div id="otpStep" class="hidden">
+              <div class="form-group">
+                <label>OTP</label>
+                <input type="text" id="forgotOtp" placeholder="6-digit OTP" maxlength="6" />
+              </div>
+              <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="forgotNewPass" minlength="6" placeholder="New password" />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary full" id="forgotBtn">Send OTP</button>
+            <button type="button" class="btn-link" onclick="switchAuth('login')">Back to Login</button>
+          </form>
+          <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+            <div class="form-row">
+              <div class="form-group"><label>First Name</label><input type="text" id="regFirst" required /></div>
+              <div class="form-group"><label>Last Name</label><input type="text" id="regLast" required /></div>
+            </div>
+            <div class="form-group"><label>Username (public)</label><input type="text" id="regUser" required placeholder="unique_username" /></div>
+            <div class="form-group"><label>Branch / Degree</label><input type="text" id="regBranch" required placeholder="e.g. CSE, MBA, M.Tech ..." /></div>
+            <div class="form-group"><label>Email (Gmail, Yahoo... — not @vitstudent.ac.in)</label><input type="email" id="regEmail" required placeholder="youremail@domain.com" /></div>
+            <div class="form-group"><label>Password</label><input type="password" id="regPass" required minlength="6" placeholder="At least 6 characters" /></div>
+            <button type="submit" class="btn-primary full">Create Account</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" class="section">
+      <div class="container narrow">
+        <div class="card profile-card">
+          <div class="profile-header">
+            <div class="avatar-wrap xl">
+              <img id="profAvatar" src="" alt="" />
+              <span class="badge-pin" id="profBadge"><i class="fas fa-medal"></i></span>
+            </div>
+            <div>
+              <h2 id="profName">User</h2> <span id="profVerified" class="verified-tick" style="display:none;" title="Verified"><i class="fas fa-check-circle"></i></span>
+              <p class="muted" id="profUser">@username</p>
+              <p class="muted" id="profBranch">Branch</p>
+            </div>
+          </div>
+          <div class="profile-sub card" id="profileSubscription">
+            <h4><i class="fas fa-crown"></i> Subscription plan</h4>
+            <div id="subGuestMsg" class="sub-guest" style="display:none;">
+              <p class="muted">Log in for your <strong>one year free subscription</strong>.</p>
+            </div>
+            <div id="subActiveMsg" class="sub-active">
+              <div class="sub-plan-row">
+                <span class="sub-badge"><i class="fas fa-check-circle"></i> Active</span>
+                <span id="subPlanName">1 Year Free</span>
+              </div>
+              <p class="muted" id="subTill">Valid until —</p>
+              <p class="sub-hint muted" id="subHint">Upload 30 papers for +6 months extension.</p>
+            </div>
+          </div>
+          <div class="stats-row profile-stats">
+            <div class="stat-card sm clickable" onclick="showHistory('uploads')"><div class="stat-num" id="profUploads">0</div><div class="stat-label">Uploads</div></div>
+            <div class="stat-card sm clickable" onclick="showHistory('downloads')"><div class="stat-num" id="profDownloads">0</div><div class="stat-label">Downloads</div></div>
+            <div class="stat-card sm clickable" onclick="toggleFriendsList()"><div class="stat-num" id="profFriends">0</div><div class="stat-label">Friends</div></div>
+            <div class="stat-card sm"><div class="stat-num orange" id="profVcash">0</div><div class="stat-label">ZX</div></div>
+          </div>
+          <div id="friendsListBox" class="friends-list-box" style="display:none;"></div>
+          <div id="historyBox" class="history-box" style="display:none;"></div>
+          <div id="customTitleNote" class="custom-title-note" style="display:none;"></div>
+          <button type="button" class="btn-outline full" id="vaultOpenBtn" onclick="openVault()" style="display:none;margin-bottom:0.75rem;">
+            <i class="fas fa-vault"></i> Open Vault
+          </button>
+          <div id="profileViewMode">
+            <div class="privacy-toggle-row">
+              <span><i class="fas fa-lock"></i> Profile privacy</span>
+              <div class="switch-wrap">
+                <span id="privacyLabel">Public</span>
+                <label class="switch">
+                  <input type="checkbox" id="privacyToggle" onchange="togglePrivacy()" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <button type="button" class="btn-outline full" onclick="openProfileEdit()"><i class="fas fa-pen"></i> Edit Profile</button>
+          </div>
+          <div id="profileEditMode" style="display:none;">
+            <div class="form-group"><label>Display Name</label><input type="text" id="editName" /></div>
+            <div class="form-group">
+              <label>Profile Photo</label>
+              <label class="file-btn" for="editPic"><i class="fas fa-image"></i> Choose Photo</label>
+              <input type="file" id="editPic" accept="image/*" onchange="onProfilePicPick(event)" hidden />
+              <span class="file-name muted" id="editPicName"></span>
+            </div>
+            <div class="form-row" style="grid-template-columns:1fr 1fr;">
+              <button type="button" class="btn-primary" onclick="saveProfile()">Save Profile</button>
+              <button type="button" class="btn-ghost" onclick="closeProfileEdit()">Cancel</button>
+            </div>
+          </div>
+          <div class="quote-ticker" id="quoteTicker">
+            <i class="fas fa-quote-left"></i>
+            <p id="quoteText">Loading inspiration...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW PAPER MODAL -->
+    <div class="modal" id="viewModal">
+      <div class="modal-content view-modal-content">
+        <button class="modal-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
+        <h3 id="viewTitle">Paper</h3>
+        <div class="view-meta" id="viewMeta"></div>
+        <iframe id="viewFrame" class="view-frame" title="Paper view"></iframe>
+        <img id="viewImg" class="view-img" alt="" style="display:none;" />
+        <div class="view-actions">
+          <button class="btn-primary" id="viewDownloadBtn"><i class="fas fa-download"></i> Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER MODAL -->
+    <div class="modal" id="userModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
+        <div class="profile-header">
+          <div class="avatar-wrap xl">
+            <img id="modalAvatar" src="" alt="" />
+            <span class="badge-pin" id="modalBadge"><i class="fas fa-medal"></i></span>
+          </div>
+          <div>
+            <h2 id="modalName">User</h2> <span id="modalVerified" class="verified-tick" style="display:none;"><i class="fas fa-check-circle"></i></span>
+            <p class="muted" id="modalUser">@username</p>
+            <p class="muted" id="modalBranch">Branch</p>
+          </div>
+        </div>
+        <div class="stats-row profile-stats">
+          <div class="stat-card sm clickable" onclick="showModalHistory('uploads')"><div class="stat-num" id="modalUploads">0</div><div class="stat-label">Uploads</div></div>
+          <div class="stat-card sm clickable" onclick="showModalHistory('downloads')"><div class="stat-num" id="modalDownloads">0</div><div class="stat-label">Downloads</div></div>
+          <div class="stat-card sm"><div class="stat-num" id="modalVisits">0</div><div class="stat-label">Visits</div></div>
+          <div class="stat-card sm"><div class="stat-num orange" id="modalVcash">0</div><div class="stat-label">ZX</div></div>
+        </div>
+        <div id="modalHistoryBox" class="history-box" style="display:none;"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-faq">
+      <h3 class="footer-faq-title"><i class="fas fa-question-circle"></i> FAQ</h3>
+      <div class="faq-pager">
+        <div class="faq-list footer-faq-list" id="faqList">
+          <details class="faq-item faq-page" data-page="0"><summary><i class="fas fa-crown"></i> How does the subscription plan work?</summary><p>Every logged-in user gets a <strong>1-year free subscription</strong>.<br> Upload <strong>30 papers</strong> to earn a <strong>+6 months</strong> extension.<br> Each additional 30 uploads extends your plan further. <br>Your plan and end date appear on your <strong>profile</strong>.</p></details>
+          <details class="faq-item faq-page" data-page="0"><summary><i class="fas fa-gift"></i> Rewards and bonuses</summary><p>New users receive <strong>30,000 ZX</strong>.<br> Earn <strong>1,000 ZX</strong> per paper upload.<br> Admin can grant bonus or cash prizes — credits show in your profile and legendary highlights. </p></details>
+          <details class="faq-item faq-page" data-page="0"><summary><i class="fas fa-lock"></i> Public / Private profiles</summary><p>Toggle Public or Private in your profile settings.<br>Private accounts show only a lock message and <strong>Send Friend Request</strong> to others.<br>Friends and Admin can see more.</p></details>
+          <details class="faq-item faq-page" data-page="1"><summary><i class="fas fa-comments"></i> How does Chat work?</summary><p>ZX Global Chat is open to all logged-in users.<br> Message friends privately from profile or friends list.<br> Be respectful and helpful.</p></details>
+          <details class="faq-item faq-page" data-page="1"><summary><i class="fas fa-star"></i> Legendary Highlights</summary><p>Admin congratulations can appear as public <strong>Legendary Highlights</strong>.<br> Admin can also remove a highlight later.</p></details>
+          <details class="faq-item faq-page" data-page="1"><summary><i class="fas fa-cloud-upload-alt"></i> How do I upload a paper?</summary><p>Go to Upload, fill subject, course code, slot, year, semester, campus and exam type. Preview the file, then submit.<br> You earn <strong>1,000zx</strong> per paper.</p></details>
+          <details class="faq-item faq-page" data-page="2"><summary><i class="fas fa-download"></i> How do I download papers?</summary><p>Open any paper card, click Download.<br> Downloads are free.<br> Your download history is private — only you and Admin can see it.</p></details>
+          <details class="faq-item faq-page" data-page="2"><summary><i class="fas fa-coins"></i> What is ZX?</summary><p>ZX is the platform currency. New users get <strong>30,000zx</strong>.<br> Earn 1,000zx per upload. Spend ZX in the Store on badges, designs and effects.</p></details>
+          <details class="faq-item faq-page" data-page="2"><summary><i class="fas fa-store"></i> What can I buy in the Store?</summary><p>Badges, profile design items, effects and verification.<br> After purchase use <strong>Apply</strong> / <strong>Remove</strong>.<br> Items stay in your Vault.</p></details>
+          <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-user-friends"></i> Friends &amp; requests</summary><p>Open Friends on your profile, tap <strong>Add Friends</strong>, search users, send requests, accept from the heart icon.</p></details>
+          <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-shield-alt"></i> What can Admin do?</summary><p>Search users, congratulate, give bonus/cash prize, terminate accounts (with reason), remove papers (with message), and manage Legendary Highlights.</p></details>
+          <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-user-slash"></i> Account termination</summary><p>If Admin terminates your account, you will see their message and cannot log in again.<br> The status persists after refresh.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-medal"></i> How do badges work?</summary><p>Default is Bronze.<br> Buy higher badges in the Store. The badge pin shows on your avatar across the site.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-vault"></i> What is the Vault?</summary><p>Vault stores items you purchased.<br> Open it from profile to apply or remove designs and custom titles.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-eye-slash"></i> Download privacy</summary><p>Only the account owner and Admin can see download history.<br> Public profiles never expose downloads.</p></details>
+          <details class="faq-item faq-page" data-page="5"><summary><i class="fas fa-graduation-cap"></i> Why was this platform built?</summary><p>VIT PYQ's is for VITians by VITians — share previous year questions across Vellore, Chennai, Amaravathi, Bhopal and Bangalore, help juniors, and build community.</p></details>
+        </div>
+        <div class="faq-controls">
+          <button type="button" class="faq-arrow" id="faqPrev" onclick="faqPage(-1)" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+          <div class="faq-dots" id="faqDots"></div>
+          <button type="button" class="faq-arrow" id="faqNext" onclick="faqPage(1)" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <a href="#" class="footer-brand logo-lg" onclick="showSection('home'); return false;">
+        <span class="logo-badge">VIT</span>
+        <span class="logo-text">PYQ's</span>
+      </a>
+      <p class="footer-copy"><i class="far fa-copyright"></i> All rights reserved. 2026 · For VITians by VITians</p>
+      <span class="footer-spacer"></span>
+    </div>
+  </footer>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

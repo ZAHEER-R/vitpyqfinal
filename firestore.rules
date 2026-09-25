@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isVit() {
+      return signedIn() && request.auth.token.email.matches('.*@vitstudent[.]ac[.]in$');
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isVit();
+      allow create, update: if signedIn() && (request.auth.uid == userId || isVit());
+      allow delete: if false;
+    }
+
+    match /mirrors/papers {
+      allow read: if true;
+      allow write: if isVit();
+    }
+
+    match /mirrors/users {
+      allow read, write: if isVit();
+    }
+
+    match /feedbacks/{id} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow delete: if signedIn();
+    }
+
+    match /reports/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update, delete: if signedIn();
+    }
+  }
+}
