@@ -1976,13 +1976,15 @@ body.modal-open .footer-faq { visibility: hidden; }
   .footer-logo-img {
     height: 24px;
     max-width: 100px;
-    transform:scale(1.4);
+    transform:scale(1.1);
     border-radius: 15%;
     border-style: solid ;
     padding: 2%;
     margin-left:45%;
     margin-right:25%;
   }
+
+
   .footer-copy {
   justify-self: center;
   margin: 0;
