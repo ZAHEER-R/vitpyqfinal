@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>VIT PYQ's — For VITians</title>
   <meta name="description" content="VIT PYQ Papers — CAT1, CAT2, FAT across all campuses. Upload, download, earn ZX." />
   <link rel="icon" href="favicon.png" type="image/png" />
@@ -45,7 +45,10 @@
   </nav>
   <!-- Friends search dropdown -->
   <div class="dropdown-panel" id="friendsSearchPanel">
-    <div class="dropdown-head">Search Friends</div>
+    <div class="dropdown-head friends-search-head">
+      <span>Search Friends</span>
+      <button type="button" class="btn-ghost sm" onclick="closeFriendsSearch()" aria-label="Close friend search" title="Close"><i class="fas fa-times"></i></button>
+    </div>
     <input type="text" id="friendSearchInput" placeholder="Username or name..." oninput="searchFriends(this.value)" />
     <div id="friendSearchResults" class="dropdown-list"></div>
   </div>
@@ -109,7 +112,7 @@
           <div class="stats-row">
             <div class="stat-card">
               <div class="stat-num purple" id="statStudents">0</div>
-              <div class="stat-label">Students Using</div>
+              <div class="stat-label"> Students Using</div>
             </div>
             <div class="stat-card">
               <div class="stat-num green" id="statPapers">0</div>
@@ -197,9 +200,9 @@
             </div>
         </div>
 
-        <!-- Real-time Student Feedback -->
+        <!--Student Feedback -->
         <div class="feedback-section" id="feedbackSection">
-          <h2 class="section-title feedback-heading"><i class="fas fa-comments"></i> Real-time Student Feedback</h2>
+          <h2 class="section-title feedback-heading"><i class="fas fa-comments"></i>Student Feedback</h2>
           <div class="feedback-stage">
             <div class="feedback-credits" id="feedbackCredits"></div>
           </div>
@@ -222,9 +225,9 @@
         <div id="papersGrid" class="papers-grid"></div>
         <div id="papersEmpty" class="empty-state" style="display:none;">
           <i class="fas fa-folder-open"></i>
-          <p>No papers found. Message in global chat for requesting upload.<br>Our ZX Team / Community members will upload them soon.<br>We love your patience for us.</p>
+          <p>No papers found. Message in global chat for requesting upload.<br>Our Team / Community members will upload them soon.<br>We ❤️ your patience for us.. </p>
         </div>
-      </div>
+      </div> 
     </section>
 
     <!-- UPLOAD -->
@@ -468,7 +471,10 @@
     <section id="leaderboard" class="section">
       <div class="container">
         <h2 class="section-title"><i class="fas fa-trophy"></i> Leaderboard</h2>
-        <div id="lbHighlights" class="lb-highlights" style="display:none;"></div>
+        <section class="leader-highlights-section" id="leaderHighlightsSection" aria-label="Leaderboard highlights" style="display:none;">
+          <div class="leader-highlights-heading"><span class="highlights-mark"><i class="fas fa-sparkles"></i></span><h3>Highlights</h3></div>
+          <div id="lbHighlights" class="lb-highlights" style="display:none;"></div>
+        </section>
         <div class="tabs">
           <button class="tab active" data-tab="uploads" onclick="switchLbTab('uploads')">Most Uploads</button>
           <button class="tab" data-tab="vcash" onclick="switchLbTab('vcash')">Most ZX</button>
@@ -754,6 +760,7 @@
           <div>
             <h2 id="modalName">User</h2> <span id="modalVerified" class="verified-tick" style="display:none;"><i class="fas fa-check-circle"></i></span>
             <p class="muted" id="modalUser">@username</p>
+            <span class="profile-privacy-tag" id="modalPrivacy">Public profile</span>
             <p class="muted" id="modalBranch">Branch</p>
           </div>
         </div>
@@ -785,7 +792,7 @@
           <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-user-friends"></i> Friends &amp; requests</summary><p>Open Friends on your profile, tap <strong>Add Friends</strong>, search users, send requests, accept from the heart icon.</p></details>
           <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-shield-alt"></i> What can Admin do?</summary><p>Search users, congratulate, give bonus/cash prize, terminate accounts (with reason), remove papers (with message), and manage Legendary Highlights.</p></details>
           <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-user-slash"></i> Account termination</summary><p>If Admin terminates your account, you will see their message and cannot log in again.<br> The status persists after refresh.</p></details>
-          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-medal"></i> How do badges work?</summary><p>Default is Bronze.<br> Buy higher badges in the Store. The badge pin shows on your avatar across the site.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-medal"></i> How do badges work?</summary><p>Default is Bronze.<br> Buy higher badges in the Store. <br>The badge pin shows on your avatar across the site.</p></details>
           <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-vault"></i> What is the Vault?</summary><p>Vault stores items you purchased.<br> Open it from profile to apply or remove designs and custom titles.</p></details>
           <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-eye-slash"></i> Download privacy</summary><p>Only the account owner and Admin can see download history.<br> Public profiles never expose downloads.</p></details>
           <details class="faq-item faq-page" data-page="5"><summary><i class="fas fa-graduation-cap"></i> Why was this platform built?</summary><p>VIT PYQ's is for VITians by VITians — share previous year questions across Vellore, Chennai, Amaravathi, Bhopal and Bangalore, help juniors, and build community.</p></details>
@@ -798,11 +805,21 @@
       </div>
     </div>
     <div class="footer-bar">
-      <a href="#" class="footer-brand logo-lg" onclick="showSection('home'); return false;">
-        <span class="logo-badge">VIT</span>
-        <span class="logo-text">PYQ's</span>
-      </a>
-      <p class="footer-copy"><i class="far fa-copyright"></i> All rights reserved. 2026 · For VITians by VITians</p>
+<a href="#" class="footer-brand logo-lg" onclick="showSection('home'); return false;" style="display:inline-flex;align-items:center;gap:0.45rem;text-decoration:none;">
+  <img
+    src="logo.jpeg"
+    alt="VIT PYQ's"
+    class="footer-logo-img"
+    style="
+      height: 36px;
+      width: auto;
+      max-width: 160px;
+      object-fit: contain;
+      display: block;
+    "
+  />
+</a>
+      <p class="footer-copy"><i class="far fa-copyright"></i> All rights reserved. 2026 · For VITians</p>
       <span class="footer-spacer"></span>
     </div>
   </footer>

@@ -84,14 +84,6 @@ function openUserProfile(userId) {
   const u = state.users.find(x => x.id === userId);
   if (!u) { toast('User not found', 'error'); return; }
   if (u.terminated) { toast('This account has been terminated', 'error'); return; }
-  // Privacy: private profiles only full view for self, friends, or admin
-  const isSelf = state.user && state.user.id === u.id;
-  const isAdmin = state.user && state.user.isAdmin;
-  const isFriend = state.user && (u.friends || []).includes(state.user.id);
-  if (!u.isPublic && !isSelf && !isAdmin && !isFriend) {
-    showPrivateProfileModal(u);
-    return;
-  }
   openUserModal(u.id);
 }
 
@@ -1248,6 +1240,11 @@ function openUserModal(id) {
   if (mv) mv.style.display = u.verified ? 'inline' : 'none';
   document.getElementById('modalUser').textContent = '@' + u.username;
   document.getElementById('modalBranch').textContent = u.branch || '';
+  const privacyTag = document.getElementById('modalPrivacy');
+  if (privacyTag) {
+    privacyTag.textContent = u.isPublic === false ? 'Private profile' : 'Public profile';
+    privacyTag.classList.toggle('private', u.isPublic === false);
+  }
   document.getElementById('modalUploads').textContent = u.uploads || 0;
   document.getElementById('modalDownloads').textContent = u.downloads || 0;
   document.getElementById('modalVisits').textContent = u.visits || 0;
@@ -1287,16 +1284,17 @@ function updateProfilePic(e) {
   const f = e.target.files[0];
   if (!f || !state.user) return;
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     state.user.avatar = reader.result;
     const u = state.users.find(x => x.id === state.user.id);
     if (u) u.avatar = reader.result;
     save(); updateUI(); renderProfile();
-    toast('Photo updated', 'success');
+    const saved = !window.SupabaseSync || !state.user || await window.SupabaseSync.pending;
+    if (saved) toast('Photo updated', 'success');
   };
   reader.readAsDataURL(f);
 }
-function saveProfile() {
+async function saveProfile() {
   if (!state.user) return;
   const name = document.getElementById('editName').value.trim();
   if (!name) { toast('Name required', 'error'); return; }
@@ -1378,7 +1376,7 @@ function onProfilePicPick(e) {
 }
 
 // override saveProfile
-function saveProfile() {
+async function saveProfile() {
   if (!state.user) return;
   const name = document.getElementById('editName').value.trim();
   if (!name) { toast('Name required', 'error'); return; }
@@ -1386,6 +1384,8 @@ function saveProfile() {
   const u = state.users.find(x => x.id === state.user.id);
   if (u) u.displayName = name;
   save(); updateUI(); renderProfile();
+  const saved = !window.SupabaseSync || await window.SupabaseSync.pending;
+  if (!saved) return;
   closeProfileEdit();
   toast('Profile saved', 'success');
 }
@@ -1488,7 +1488,7 @@ function renderProfile() {
   }
 }
 
-function togglePrivacy() {
+async function togglePrivacy() {
   if (!state.user) return;
   const pt = document.getElementById('privacyToggle');
   const isPublic = pt ? pt.checked : true;
@@ -1496,6 +1496,15 @@ function togglePrivacy() {
   const u = state.users.find(x => x.id === state.user.id);
   if (u) u.isPublic = isPublic;
   save();
+  const saved = !window.SupabaseSync || await window.SupabaseSync.pending;
+  if (!saved) {
+    state.user.isPublic = !isPublic;
+    if (u) u.isPublic = !isPublic;
+    if (pt) pt.checked = !isPublic;
+    const oldLabel = document.getElementById('privacyLabel');
+    if (oldLabel) oldLabel.textContent = !isPublic ? 'Public' : 'Private';
+    return;
+  }
   const pl = document.getElementById('privacyLabel');
   if (pl) pl.textContent = isPublic ? 'Public' : 'Private';
   toast(isPublic ? 'Profile is now Public' : 'Profile is now Private', 'success');
@@ -1511,6 +1520,11 @@ function toggleFriendsSearch() {
     document.getElementById('friendSearchResults').innerHTML = '';
     document.getElementById('friendSearchInput').focus();
   }
+}
+
+function closeFriendsSearch() {
+  const panel = document.getElementById('friendsSearchPanel');
+  if (panel) panel.classList.remove('open');
 }
 
 function toggleNotifPanel() {
@@ -1850,6 +1864,12 @@ function showModalHistory(type) {
   if (!u) return;
   const isSelf = state.user && state.user.id === modalUserId;
   const isAdmin = state.user && state.user.isAdmin;
+  const isFriend = state.user && (u.friends || []).includes(state.user.id);
+  if (u.isPublic === false && !isSelf && !isAdmin && !isFriend) {
+    box.innerHTML = '<p class="muted private-history-note"><i class="fas fa-lock"></i> History is visible only to friends, the account owner, and admins.</p>';
+    box.style.display = 'block';
+    return;
+  }
   if (type === 'downloads' && !isSelf && !isAdmin) {
     alert('Downloads are private. Only the user and admins can view download history.');
     box.style.display = 'none';
@@ -2307,8 +2327,9 @@ searchFriends = function(q) {
     else if (sent) action = '<span class="muted">Requested</span>';
     else action = `<button class="btn-outline sm" onclick="event.stopPropagation(); sendFriendRequest('${u.id}')">Add</button>`;
     const tick = u.verified ? ' <i class="fas fa-check-circle" style="color:#1d9bf0"></i>' : '';
+    const privacyTag = u.isPublic === false ? '<span class="privacy-status-tag">Private</span>' : '';
     return `<div class="dropdown-item" style="cursor:pointer;" onclick="openUserModal('${u.id}')">
-      <span><strong>@${escapeHtml(u.username)}</strong>${tick}<br/><span class="muted">${escapeHtml(u.displayName)}</span></span>
+      <span><strong>@${escapeHtml(u.username)}</strong>${tick} ${privacyTag}<br/><span class="muted">${escapeHtml(u.displayName)}</span></span>
       ${action}
     </div>`;
   }).join('');
@@ -2526,8 +2547,14 @@ applyProfileEffects = function() {
 renderLbHighlights = function() {
   const box = document.getElementById('lbHighlights');
   if (!box) return;
+  const section = document.getElementById('leaderHighlightsSection');
   const highlights = JSON.parse(localStorage.getItem('vitpyq_highlights') || '[]');
-  if (!highlights.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  if (!highlights.length) {
+    box.style.display = 'none'; box.innerHTML = '';
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = 'block';
   box.style.display = 'flex';
   const isAdmin = state.user && state.user.isAdmin;
   box.innerHTML = highlights.slice(0, 12).map(h => {
@@ -3283,7 +3310,7 @@ handleForgot = async function (e) {
   const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
   if (!email) { toast('Enter your email', 'error'); return; }
   try {
-    const { error } = await window.sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+    const { error } = await window.sb.auth.resetPasswordForEmail(email, { redirectTo: window.SUPABASE_CONFIG.redirectUrl });
     if (error) throw error;
     toast('Password reset link sent. Check your inbox.', 'success');
     switchAuth('login');

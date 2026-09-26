@@ -5,14 +5,19 @@
     return;
   }
   window.sb = window.supabase.createClient(config.url, config.anonKey, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage
+    }
   });
   window.SupabaseAPI = {
     async register(email, password, metadata) {
       const { data, error } = await window.sb.auth.signUp({
         email,
         password,
-        options: { data: metadata }
+        options: { data: metadata, emailRedirectTo: config.redirectUrl }
       });
       if (error) throw error;
       return data;
@@ -26,7 +31,7 @@
       const { data, error } = await window.sb.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.href,
+          redirectTo: config.redirectUrl,
           queryParams: { hd: config.vitEmailDomain, prompt: 'select_account' }
         }
       });

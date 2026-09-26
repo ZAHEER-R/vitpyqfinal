@@ -78,12 +78,22 @@ for each row execute function public.protect_profile_fields();
 create or replace function public.create_profile_for_auth_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
+  base_username text;
   desired_username text;
   desired_name text;
+  suffix text;
+  attempt integer := 1;
 begin
-  desired_username := lower(regexp_replace(coalesce(new.raw_user_meta_data->>'username', split_part(new.email,'@',1)), '[^a-z0-9_]', '', 'g'));
-  if length(desired_username) < 3 then desired_username := 'student'; end if;
-  desired_username := left(desired_username, 18) || '_' || left(replace(new.id::text,'-',''),6);
+  base_username := lower(regexp_replace(coalesce(new.raw_user_meta_data->>'username', split_part(new.email,'@',1)), '[^a-z0-9_]', '', 'g'));
+  base_username := trim(both '_' from base_username);
+  if length(base_username) < 3 then base_username := 'student'; end if;
+  base_username := left(base_username, 30);
+  desired_username := base_username;
+  while exists (select 1 from public.profiles where username = desired_username) loop
+    attempt := attempt + 1;
+    suffix := '_' || attempt::text;
+    desired_username := left(base_username, 30 - length(suffix)) || suffix;
+  end loop;
   desired_name := coalesce(nullif(new.raw_user_meta_data->>'displayName',''), nullif(trim(concat_ws(' ',new.raw_user_meta_data->>'firstName',new.raw_user_meta_data->>'lastName')),''), desired_username);
   insert into public.profiles(id,username,display_name,branch)
     values(new.id,desired_username,desired_name,coalesce(nullif(new.raw_user_meta_data->>'branch',''),'VIT'))
@@ -186,6 +196,19 @@ create table if not exists public.friend_requests (
   check (from_id <> to_id)
 );
 
+create or replace function public.are_app_friends(first_user uuid, second_user uuid)
+returns boolean
+language sql stable security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.friend_requests
+    where accepted = true
+      and ((from_id = first_user and to_id = second_user)
+        or (from_id = second_user and to_id = first_user))
+  );
+$$;
+
 create table if not exists public.feedbacks (
   id text primary key,
   user_id uuid not null references auth.users(id),
@@ -239,8 +262,77 @@ alter table public.highlights enable row level security;
 alter table public.wallet_transactions enable row level security;
 alter table public.user_inventory enable row level security;
 
+do $$
+declare
+  policy_row record;
+begin
+  for policy_row in
+    select tablename, policyname
+    from pg_policies
+    where schemaname = 'public'
+      and (tablename, policyname) in (
+        ('admin_members', 'admin membership private'),
+        ('profiles', 'profiles readable'),
+        ('profiles', 'profile owner create'),
+        ('profiles', 'profile owner update'),
+        ('profiles', 'profile admin delete'),
+        ('user_state', 'state owner or admin read'),
+        ('user_state', 'state owner or admin write'),
+        ('papers', 'papers public read'),
+        ('papers', 'paper uploader create'),
+        ('papers', 'paper uploader update'),
+        ('papers', 'paper uploader delete'),
+        ('paper_likes', 'likes readable'),
+        ('paper_likes', 'like owner add'),
+        ('paper_likes', 'like owner remove'),
+        ('paper_events', 'events insert'),
+        ('paper_events', 'events admin read'),
+        ('global_messages', 'chat readable'),
+        ('global_messages', 'chat send own'),
+        ('global_messages', 'chat admin delete'),
+        ('private_messages', 'private chat participants read'),
+        ('private_messages', 'private chat send own'),
+        ('private_messages', 'private chat admin delete'),
+        ('friend_requests', 'friend request participants read'),
+        ('friend_requests', 'friend request target or admin update'),
+        ('friend_requests', 'friend request participant delete'),
+        ('feedbacks', 'feedback public read'),
+        ('feedbacks', 'feedback own insert'),
+        ('feedbacks', 'feedback owner or admin delete'),
+        ('reports', 'reports owner or admin read'),
+        ('reports', 'reports own insert'),
+        ('reports', 'reports admin update'),
+        ('reports', 'reports admin delete'),
+        ('highlights', 'highlights public read'),
+        ('highlights', 'highlights admin manage'),
+        ('wallet_transactions', 'wallet owner or admin read'),
+        ('user_inventory', 'inventory owner or admin read')
+      )
+  loop
+    execute format('drop policy if exists %I on public.%I', policy_row.policyname, policy_row.tablename);
+  end loop;
+
+  for policy_row in
+    select policyname
+    from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname in (
+        'public app assets read',
+        'user upload own assets',
+        'user update own assets',
+        'user delete own assets'
+      )
+  loop
+    execute format('drop policy if exists %I on storage.objects', policy_row.policyname);
+  end loop;
+end;
+$$;
+
 create policy "admin membership private" on public.admin_members for select to authenticated using (user_id = auth.uid());
-create policy "profiles readable" on public.profiles for select to anon, authenticated using (is_public or id = auth.uid() or public.is_app_admin());
+create policy "profiles readable" on public.profiles for select to anon, authenticated using (
+  true
+);
 create policy "profile owner create" on public.profiles for insert to authenticated with check (id = auth.uid() or public.is_app_admin());
 create policy "profile owner update" on public.profiles for update to authenticated using (id = auth.uid() or public.is_app_admin()) with check (id = auth.uid() or public.is_app_admin());
 create policy "profile admin delete" on public.profiles for delete to authenticated using (public.is_app_admin());

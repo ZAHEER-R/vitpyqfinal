@@ -1,12 +1,15 @@
 window.SupabaseSync = {
   ready: false,
   pending: Promise.resolve(),
+  refreshTimer: null,
+  refreshBusy: false,
   async initialize() {
     if (!window.sb) return false;
     try {
       const { data: { session } } = await window.sb.auth.getSession();
       this.ready = true;
       await this.pull();
+      this.startRefresh();
       return true;
     } catch (error) {
       const message = (error && error.message) || String(error || '');
@@ -21,6 +24,8 @@ window.SupabaseSync = {
   async pull() {
     if (!window.sb) return false;
     try {
+      let cachedUsers = [];
+      try { cachedUsers = JSON.parse(localStorage.getItem('vitpyq_users') || '[]'); } catch (e) {}
       const user = (await window.sb.auth.getUser()).data.user;
       const [profileResult, paperResult, chatResult, feedbackResult, highlightResult] = await Promise.all([
         window.sb.from('profiles').select('*'),
@@ -61,21 +66,36 @@ window.SupabaseSync = {
     state.users = profiles.map(profile => {
       const privateData = privateById.get(profile.id) || {};
       const stored = privateData.user || {};
-      return Object.assign({}, stored, {
+      const cachedUser = user && profile.id === user.id
+        ? cachedUsers.find(item => item.id === user.id || String(item.email || '').toLowerCase() === String(user.email || '').toLowerCase())
+        : null;
+      const restored = Object.assign({}, cachedUser || {}, stored);
+      ['uploadHistory', 'downloadHistory', 'systemNotifs', 'rewardHistory'].forEach(function (key) {
+        const serverRows = Array.isArray(stored[key]) ? stored[key] : [];
+        const cachedRows = Array.isArray(cachedUser && cachedUser[key]) ? cachedUser[key] : [];
+        const rowsById = new Map();
+        serverRows.concat(cachedRows).forEach(function (row, index) {
+          const rowId = row.id || row.paperId || `${row.ts || 0}_${index}`;
+          if (!rowsById.has(rowId)) rowsById.set(rowId, row);
+        });
+        if (rowsById.size) restored[key] = Array.from(rowsById.values()).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      });
+      delete restored.password;
+      return Object.assign({}, restored, {
         id: profile.id,
         username: profile.username,
         displayName: profile.display_name,
         branch: profile.branch,
-        avatar: profile.avatar_url || '',
+        avatar: profile.avatar_url || restored.avatar || '',
         badge: profile.badge,
         isPublic: profile.is_public,
         verified: profile.verified,
         isAdmin: profile.is_admin,
         terminated: profile.terminated,
         vcash: profile.vcash,
-        uploads: profile.uploads,
-        downloads: profile.downloads,
-        visits: profile.visits,
+        uploads: Math.max(Number(profile.uploads) || 0, Number(stored.uploads) || 0, Number(cachedUser && cachedUser.uploads) || 0),
+        downloads: Math.max(Number(profile.downloads) || 0, Number(stored.downloads) || 0, Number(cachedUser && cachedUser.downloads) || 0),
+        visits: Math.max(Number(profile.visits) || 0, Number(stored.visits) || 0, Number(cachedUser && cachedUser.visits) || 0),
         friends: stored.friends || [],
         requests: stored.requests || [],
         email: stored.email || (user && profile.id === user.id ? user.email : ''),
@@ -306,6 +326,52 @@ window.SupabaseSync = {
     }
   },
   schedulePush() {
-    this.pending = this.pending.catch(() => {}).then(() => new Promise(resolve => setTimeout(resolve, 250))).then(() => this.push()).catch(error => console.warn('[VIT PYQ] Supabase sync failed', error));
+    this.pending = this.pending.catch(() => {}).then(() => new Promise(resolve => setTimeout(resolve, 250))).then(() => this.push()).then(() => true).catch(error => {
+      console.error('[VIT PYQ] Supabase sync failed', error);
+      if (document.visibilityState !== 'hidden' && typeof toast === 'function') toast('Cloud save failed: ' + (error.message || 'check your connection'), 'error');
+      return false;
+    });
+    return this.pending;
+  },
+  startRefresh() {
+    if (this.refreshTimer) return;
+    const signature = function () {
+      return JSON.stringify({
+        users: state.users.map(user => [user.id, user.displayName, user.uploads, user.downloads, user.vcash, user.friends && user.friends.length, user.requests && user.requests.length]),
+        papers: state.papers.map(paper => paper.id),
+        messages: state.messages.map(message => message.id),
+        privateChats: Object.entries(state.privateChats || {}).map(([key, messages]) => [key, messages.length, messages.length ? messages[messages.length - 1].id || messages[messages.length - 1].ts : 0])
+      });
+    };
+    const refresh = async () => {
+      if (this.refreshBusy || document.visibilityState === 'hidden') return;
+      try {
+        const { data: { session } } = await window.sb.auth.getSession();
+        if (!session) return;
+        this.refreshBusy = true;
+        const before = signature();
+        await this.pull();
+        if (before !== signature()) {
+          updateUI();
+          if (document.getElementById('home')?.classList.contains('active')) renderHomePapers();
+          if (document.getElementById('papers')?.classList.contains('active')) renderPapers();
+          if (document.getElementById('leaderboard')?.classList.contains('active')) renderLeaderboard();
+          if (document.getElementById('chat')?.classList.contains('active')) renderChat();
+          if (document.getElementById('personalChatPanel')?.style.display === 'block') {
+            renderPcFriends();
+            renderPcMessages();
+          }
+          renderNotifs();
+        }
+      } catch (error) {
+        console.warn('[VIT PYQ] Cross-device refresh failed', error);
+      } finally {
+        this.refreshBusy = false;
+      }
+    };
+    this.refreshTimer = setInterval(refresh, 15000);
+    window.addEventListener('focus', refresh);
+    window.addEventListener('pageshow', refresh);
+    document.addEventListener('visibilitychange', refresh);
   }
 };
