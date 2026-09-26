@@ -1959,7 +1959,7 @@ body.modal-open .footer-faq { visibility: hidden; }
 }
 
 /* Mobile */
-@media (max-width: 600px) {
+@media (min-width:381px) and (max-width: 600px) {
   .footer-logo-img {
     height: 28px;
     max-width: 120px;
@@ -1976,7 +1976,7 @@ body.modal-open .footer-faq { visibility: hidden; }
   .footer-logo-img {
     height: 24px;
     max-width: 100px;
-    transform:scale(0.5);
+    transform:scale(1.5);
     border-radius: 15%;
     border-style: solid ;
     padding: 2%;
