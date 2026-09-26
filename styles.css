@@ -1959,15 +1959,17 @@ body.modal-open .footer-faq { visibility: hidden; }
 }
 
 /* Mobile */
-@media (max-width: 600px) {
+@media (min-width: 381px) and (max-width: 600px) {
   .footer-logo-img {
     height: 28px;
     max-width: 120px;
-    transform:scale(2.4);
+    transform: scale(2.4);
     border-radius: 15%;
-    border-style: solid ;
+    border: 1px solid;
     padding: 2%;
-    margin-left:45%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
   }
 }
 
@@ -1976,7 +1978,7 @@ body.modal-open .footer-faq { visibility: hidden; }
   .footer-logo-img {
     height: 24px;
     max-width: 100px;
-    transform:scale(0.9);
+    transform:scale(1.2);
     border-radius: 15%;
     border-style: solid ;
     padding: 2%;
