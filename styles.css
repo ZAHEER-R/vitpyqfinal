@@ -1976,7 +1976,7 @@ body.modal-open .footer-faq { visibility: hidden; }
   .footer-logo-img {
     height: 24px;
     max-width: 100px;
-    transform:scale(1.5);
+    transform:scale(1.0);
     border-radius: 15%;
     border-style: solid ;
     padding: 2%;
