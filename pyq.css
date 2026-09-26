@@ -1210,3 +1210,77 @@ body {
         width: 90%;
     }
 }
+
+
+/* Footer logo — default (desktop) */
+.footer-brand.logo-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+}
+
+.footer-logo-img {
+  height: 36px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+  transform:scale(3.4);
+    border-radius: 15%;
+    border-style: solid ;
+    padding: 2%;
+    margin-top:-30%;
+    margin-left:-30%;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .footer-logo-img {
+    height: 32px;
+    max-width: 140px;
+    transform:scale(2.4);
+    border-radius: 15%;
+    border-style: solid ;
+    padding: 2%;
+    margin-left:55%;
+    margin-bottom: 15%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .footer-logo-img {
+    height: 28px;
+    max-width: 120px;
+    transform:scale(2.4);
+    border-radius: 15%;
+    border-style: solid ;
+    padding: 2%;
+    margin-left:45%;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .footer-logo-img {
+    height: 24px;
+    max-width: 100px;
+    transform:scale(1.1);
+    border-radius: 15%;
+    border-style: solid ;
+    padding: 2%;
+    margin-left:45%;
+    margin-right:25%;
+  }
+
+
+  .footer-copy {
+  justify-self: center;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left:10%;
+}
+}
