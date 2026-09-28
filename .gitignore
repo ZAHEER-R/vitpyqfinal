@@ -1,0 +1,11 @@
+node_modules/
+.firebase/
+*.log
+.DS_Store
+.env
+.env.*
+*.zip
+
+client id, secret.txt
+
+client id, secret.txt

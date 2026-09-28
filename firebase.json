@@ -1,0 +1,36 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.zip",
+      "**/*.sql",
+      "**/*.txt",
+      "VIT-PYQ-v23-COMPLETE/**",
+      "supabase/**",
+      "**/README.md",
+      "**/CONNECT.md",
+      "**/AUTH.md",
+      "**/DATABASE.md"
+    ],
+    "rewrites": [
+      { "source": "**", "destination": "/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(html|css|js)",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, max-age=0" }
+        ]
+      }
+    ]
+  }
+}

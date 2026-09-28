@@ -1,0 +1,78 @@
+Current version fixes
+
+1. in mobile views the paper view thumbnail is adark and showing dark and center open button later on clicking its opening src od database in supabase where it stored in other site in other tab opening
+so please change this like paper should visible in thumbnail instead of open adark , while scrolling and view also 
+
+2. and one more when iframe is opening on clicking view ,in paper  Thumbnail the iframe height is big in mobile view kindly resize such that it fit s in mbile screens adjust iframe height x button overflowed to header 
+
+3. so please do this also
+while searching key words for.paper both caps and smalls up low case of alpjhabets shiuld work.
+
+
+
+4. and in desktop view only 4 pgs per row should visible in tablet 3 pages, in phones 2 pages per index should visible reduce thumbnail sizin home page .
+
+5. notifications msg count badge is ok but when opened and read the badges should go
+
+6. also fix the alignment sizing of vit pyq image logo in footer in all screens make sure it should in medium size in all screens with correct margins
+
+7. in any page header should be position fixed with maz zindex while pages are solling up anx down it should be there.
+
+8. faq are getting vanished sometimes and also 
+In store if i purchase badges they are auto equipping so the thing is i should get badges in my vault so i go there it should be there so i shd see equip button remove button so it is equipped by deaulty everone will have bronze badge in their vaults if more items badges purxhase they shd be added to the their vaults so they quip/ remove them in their interests 
+
+8.1 in store if a item purchased the buy button should change to purchased button
+
+9. currently blue tick badge is visbling down to the name of user kindly keep after the name in same row as like instagram blue tick badge is visible.
+
+10. when the admin gives to the other user's cash prize yeah, this is working good.But the thing is, the end.User is not getting notified that the admin has sent this bonus.Amount to him, so kindly add there. So the end user should notify when he received a cash prize from the admin
+=====================================
+
+
+
+
+
+new features
+
+1.add 3 dots button like in whatsapp for friends names in personal chat on clicking that i can see clear chat, chat dissapear mode on off, block friend so I cant able to recieve msgs from my frnd.
+
+2. In profile page give a one more option inside edit profile to edit user name once the username edited it cant be change for next 15 days, profile username should get updated if edited and for next 15 days i f he tries he/her cant do edit user name
+
+3. Notifications actually for notifications are coming in website if in website notifications comes it should send notifications through firebase to the user device in from web notification, so that the users get noifications for new paper uploads, chats from admin friends ,cash prize, appreciation by admin , friend requests  these all are sent to end device so users they can see notification in notofication panel inside theor mobiles.
+
+3.1 in profile page give toggle button, for notification on off so that  if its on they will recieve notifications to phone if offed its just in inside app it will be recieved , if onned it recieves to phone of user
+
+4.give corousel indexes with left righf arrows for the profiles now visibling in leaderboard page with 10 profiles per index is enough.
+
+
+5. supabase is sending mail for reset password link while I clicked on forward password and ender link and requesting for otp right?The thing is, when I click on the reset password, the account is getting logged in.I'm not getting an option to change the password by entering the o t p or if not so o t p I can at least should enter the new password in the interface.It is not coming with the option.Asking for enter new password.It is opening the website by logging with my account.So kindly fix this so I can send my password and I can a back log in with a website with the new password with my  mail and password
+
+6. add a hero quote like
+. For the Students, By the Students Vitians
+. Open source Organization
+
+7. Inside the preview of upload history and download history on clicking uploads and downloads button.The preview interface is opening right in the history is being visible 
+8.So make this, add the add the corresel with left and right arrow.Inside this also, so we can switch the indexes for seeing 5 histories per index
+
+9. On searching friends in add friends profiles are coming with name now add profile photos also for the outputs
+Oh, like Instagram. If we search profile, we'll get the profile with the profile photo right? Name with the profile photo like that. If we search now, friend's name in this app. So it should get with the user name and profile photo also. So has this same as now and just add a profile photo, and 
+this friends search panel box should open in full page interface like instagram search works for now its in small box style at top make to fit screen in all screen sizes.
+
+10. in my profile, there is visible friends option right?When I click on my friends, the friends are getting visible with their profiles. So when I click on their profile, the profile is opening with the name, user name and all like uploads, downloads, count with visits and vx right with this, add one more button.If he or she is a friend in my profile, only this button should visible.The button name is message 
+.So when I click on the chat, I will redirect to the global page personal chatting panel with the friend profile
+
+11. In a paper thumbnail, with the details which are being visible paper thumbnail, right?Add a star rating also.Like, if we scroll in zomato or swiggy, we will see the ratings of the food eaters in a star.Rating right out of five stars, so the average star count should be counted by.If ten numbers are given some rating out of five stars, the average should be shown in the faisar.And beside in parenthesis, the count of the raters should be shown
+
+
+
+
+
+=======================================================================================
+
+Bring me the photos series when I open the view in my mobile phone, the height was very over from to the back of the header. Please reduce the height of the preview page of this, and also if you see that the it is showing the PDF is dark, open button. So kindly don't make this like this. So the controls and everything should be open in my browser in my mobile. And also one more thing in my vault I purchased a silver badge, gold badge, but in my vault only the bronze badge is being visible, so gold and silver badges are not being visible, and also do this change fixes.  And also if in the faculty section in the bottom, the arrow marks are being merged with this, so kindly increase the margin top of the arrow marks, left right, on the carousel in the faq section. also make sure the change in user name gets relflected permanent in profile, also later it cant for 15 days , clear chat after doing an=gain sgs are bering appearing fix that in personal when open friend name is visibke with that profile photo should also visible , as a users give them privilage to delte their own msgs form global chat by long pressing on message give unsend option. and dissaperar mode on off , if mode onned and chatted and offed then chat should be cleared auto this is dissapear mode. and also i am not getting any notifi atoion for admin, frns, login messages. fix working of notification. , change ui of global chat,make name to chat , when i open chat my friends profile should visible and add friends button should visible my friends profile wih=th name and phot should be their as bars when i click on them should redirect to friends chat page, in chat friends profile, buttons of add firend and o=global chat button should be there on clicking global chat should open global chat ;chat panel like the chat page in instagram style., already owned items are not updated to purchased status ins tore and all ir=tems purchased not being visble in profile vault. solve these and messages notfications should work , notication count badges when new arrived, preview of view paper scrooling shpuld work good in all screens, ipad also and website shouldn't get zoomed in any screen by pinching.
+
+make sure searching papers , filters exam,sem,yearr, and campus filter all are working every functionalityies should work such as notification also., lgin should save even i close ad revisit sitre tioll log out by myself, admin message s are not received to users kindly fix this also and notification panel not receiving any notification for cash prize by admin also please fix these,
+and clicking download is opening file not downloading as pdf,like btton shd work correctly without having dbase errors.
+npx firebase deploy --only hosting --project vit-pyq-v2 --config firebase.json
+
+error in styling in desktop view after deploy please fix the json errorof firebase i want design how its seen in live erver.
