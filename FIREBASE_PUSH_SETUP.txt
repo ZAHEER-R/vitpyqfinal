@@ -1,0 +1,48 @@
+VIT PYQ - Firebase Web Push Setup
+
+Existing Firebase project: vit-pyq-v2
+Firebase project ID: vit-pyq-v2
+
+1. Apply the Supabase SQL migration
+
+Run supabase/migrations/202609290002_resource_library_upload_notifications.sql in the Supabase SQL Editor. It creates the resource_bookmarks table, backfills existing bookmarks, and adds in-app notifications for new paper and notes uploads.
+
+2. Get the Web Push VAPID public key
+
+In Firebase Console, open project vit-pyq-v2, then Project settings > Cloud Messaging > Web configuration. Generate or copy the Web Push certificate public key. Put that PUBLIC key in firebase-config.js:
+
+window.FIREBASE_VAPID_KEY = "PASTE_FIREBASE_WEB_PUSH_PUBLIC_KEY_HERE";
+
+The VAPID public key is client configuration. Do not put a VAPID private key in the website.
+
+3. Configure server-only FCM credentials
+
+In Google Cloud Console for project vit-pyq-v2, create or select a service account with permission to send Firebase Cloud Messaging messages. Create a JSON key only if your organization's security policy permits it.
+
+In Supabase Dashboard > Project Settings > Edge Functions > Secrets, set:
+
+FCM_PROJECT_ID = vit-pyq-v2
+FCM_CLIENT_EMAIL = the service account client_email value
+FCM_PRIVATE_KEY = the service account private_key value
+
+FCM_PRIVATE_KEY is secret. Enter it directly in the Supabase secrets UI. Never add it to this file, firebase-config.js, source control, email, or a client app.
+
+4. Deploy the Edge Function
+
+From the project directory, deploy the existing send-push function:
+
+supabase functions deploy send-push --project-ref lbtciciychdyizmmmfyo
+
+The Supabase CLI must be authenticated and linked to the project first. SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY are provided to deployed Supabase Edge Functions by the platform; never expose the service-role key in website code.
+
+5. Enable on each device
+
+Deploy the website over HTTPS. Each user must sign in and enable Device push notifications in Profile on every browser/device they want to receive background alerts on. The browser will request notification permission. iOS/iPadOS web push requires an installed Home Screen web app and a supported OS/browser version.
+
+After the toggle reports success, use the Profile "Send test push" button on that same device. A received test confirms the browser token, service worker, Firebase credentials, and FCM route. If it reports an error, read the message and check Supabase Dashboard > Edge Functions > send-push > Logs. The test targets only the signed-in account's own registered device tokens.
+
+6. Notification behavior
+
+Paper and notes uploads create in-app notifications for other accounts. Background push is sent only to accounts that opted in on a device and have a valid FCM token. This avoids unsolicited push alerts and stale device registrations.
+
+This project already has Firebase client configuration and a send-push Edge Function. No generated VAPID or service-account secrets are included here; generate/configure them in Firebase/Google Cloud and Supabase as described above.

@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VIT PYQ Papers | VIT University Previous Year Question Papers &amp; Notes</title>
+  <meta name="description" content="Download free VIT previous year question papers, CAT1, CAT2, and FAT papers, plus study notes for VIT Vellore, Chennai, Amaravati, Bhopal, and Bangalore students. A student-driven VIT PYQ community." />
+  <meta name="keywords" content="VIT PYQ papers, VIT previous year question papers, VIT question papers, VIT notes, CAT1 papers, CAT2 papers, FAT papers, VIT Vellore papers, VIT Chennai papers, VIT Amaravati papers, VIT Bhopal papers, VIT Bangalore papers, Zaheer Rachakula, vitpyqpapers.in" />
+  <meta name="author" content="Zaheer Rachakula" />
+  <meta name="robots" content="index,follow,max-image-preview:large,alternate" />
+  <meta name="theme-color" content="#5b2be0" />
+  <link rel="canonical" href="https://vitpyqpapers.in/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="VIT PYQ Papers" />
+  <meta property="og:title" content="VIT PYQ Papers | VIT University Previous Year Question Papers &amp; Notes" />
+  <meta property="og:description" content="Free VIT University previous year question papers, CAT1, CAT2, and FAT papers plus study notes for students across VIT campuses." />
+  <meta property="og:url" content="https://vitpyqpapers.in/" />
+  <meta property="og:image" content="https://vitpyqpapers.in/logo.jpg" />
+  <meta property="og:image:alt" content="VIT PYQ Papers logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@vitpyqpapers" />
+  <meta name="twitter:title" content="VIT PYQ Papers | VIT University Previous Year Question Papers &amp; Notes" />
+  <meta name="twitter:description" content="Free VIT University previous year question papers, CAT1, CAT2, and FAT papers plus study notes for students across VIT campuses." />
+  <meta name="twitter:image" content="https://vitpyqpapers.in/logo.jpg" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://vitpyqpapers.in/#website","name":"VIT PYQ Papers","alternateName":["VIT PYQ's","VITPYQ","vitpyqpapers.in"],"url":"https://vitpyqpapers.in/","description":"Free VIT University previous year question papers, CAT1, CAT2, FAT exam papers, and study notes for VIT students.","publisher":{"@id":"https://vitpyqpapers.in/#organization"},"inLanguage":"en","sameAs":["https://vit-pyq-v2.web.app/","https://vitpyqpapers.vercel.app/"],"potentialAction":{"@type":"SearchAction","target":"https://vitpyqpapers.in/#?q={search_term_string}","query-input":"required name=search_term_string"},"creator":{"@id":"https://vitpyqpapers.in/#creator"}},{"@type":"Organization","@id":"https://vitpyqpapers.in/#organization","name":"VIT PYQ Papers","url":"https://vitpyqpapers.in/","logo":"https://vitpyqpapers.in/logo.jpg","description":"Independent student community for VIT previous year papers and study material.","sameAs":["https://vit-pyq-v2.web.app/","https://vitpyqpapers.vercel.app/"]},{"@type":"Person","@id":"https://vitpyqpapers.in/#creator","name":"Zaheer Rachakula","url":"https://vitpyqpapers.in/#developer","jobTitle":"Creator and maintainer of VIT PYQ Papers","knowsAbout":["VIT University question papers","VIT previous year papers","VIT CAT1 CAT2 FAT resources","VIT study notes"]},{"@type":"CollectionPage","@id":"https://vitpyqpapers.in/#webpage","url":"https://vitpyqpapers.in/","name":"VIT PYQ Papers | VIT University Previous Year Question Papers & Notes","isPartOf":{"@id":"https://vitpyqpapers.in/#website"},"about":{"@id":"https://vitpyqpapers.in/#organization"},"inLanguage":"en"}]}</script>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="neuralCanvas"></canvas>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo logo-lg" onclick="showSection('home'); return false;">
+        <span class="logo-badge">VIT</span>
+        <span class="logo-text">PYQ's</span>
+      </a>
+      <button type="button" class="nav-home-btn" onclick="showSection('home')" title="Home" aria-label="Home">
+        <i class="fas fa-home"></i>
+      </button>
+      <div class="nav-search desktop-only">
+        <i class="fas fa-search"></i>
+        <input type="text" id="globalSearch" placeholder="Search papers by subject or code..." oninput="liveSearchHome(this.value)" autocomplete="off" />
+      </div>
+      <div class="nav-right">
+        <div class="nav-icon-btn" id="notifBtn" onclick="toggleNotifPanel()" title="Notifications" style="display:none;">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot" id="notifDot" style="display:none;">0</span>
+        </div>
+        <div class="user-chip desktop-only" id="userChip" onclick="navTo('profile')" style="display:none;" title="My Profile">
+          <div class="avatar-wrap">
+            <img id="navAvatar" src="" alt="" />
+            <span class="badge-pin" id="navBadge"><i class="fas fa-medal"></i></span>
+          </div>
+          <span id="navUserName">User</span>
+        </div>
+        <button class="btn-ghost desktop-only" id="loginBtn" onclick="showSection('auth')"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </nav>
+  <!-- Friends search dropdown -->
+  <div class="dropdown-panel" id="friendsSearchPanel">
+    <div class="dropdown-head friends-search-head">
+      <span>Search Friends</span>
+      <button type="button" class="btn-ghost sm" onclick="closeFriendsSearch()" aria-label="Close friend search" title="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <input type="text" id="friendSearchInput" placeholder="Username or name..." oninput="searchFriends(this.value)" />
+    <div id="friendSearchResults" class="dropdown-list"></div>
+  </div>
+  <!-- Notifications -->
+  <div class="dropdown-panel" id="notifPanel">
+    <div class="dropdown-head notif-head">
+      <span><i class="fas fa-bell"></i> Notifications</span>
+      <div class="notif-head-actions">
+        <button type="button" class="btn-ghost sm" onclick="clearClearableNotifs()" title="Clear all"><i class="fas fa-broom"></i> Clear</button>
+        <button type="button" class="btn-ghost sm notif-close-x" onclick="closeNotifPanel()" aria-label="Close notifications" title="Close"><i class="fas fa-times"></i></button>
+      </div>
+    </div>
+    <div id="notifList" class="dropdown-list"></div>
+  </div>
+
+
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <div class="side-profile" id="sideProfile" style="display:none;">
+        <div class="avatar-wrap lg" onclick="navTo('profile')">
+          <img id="sideAvatar" src="" alt="" />
+          <span class="badge-pin" id="sideBadge"><i class="fas fa-medal"></i></span>
+        </div>
+        <div onclick="navTo('profile')" style="cursor:pointer;">
+          <strong id="sideName">User</strong>
+          <div class="muted" id="sideVcash">0 ZX</div>
+        </div>
+      </div>
+      <div id="sideGuest" style="display:block;">
+        <button class="btn-primary full" onclick="showSection('auth'); closeMenu();"><i class="fas fa-sign-in-alt"></i> Login / Register</button>
+      </div>
+      <button class="close-menu" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="side-links">
+      <a href="#" onclick="navTo('home')"><i class="fas fa-home"></i> Home</a>
+      <a href="#" onclick="navTo('papers')"><i class="fas fa-photo-video"></i> Media</a>
+      <a href="#" onclick="navTo('upload')"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+      <a href="#" onclick="navTo('store')"><i class="fas fa-store"></i> Store</a>
+      <a href="#" onclick="navTo('leaderboard')"><i class="fas fa-trophy"></i> Leaderboard</a>
+      <a href="#" onclick="navTo('chat')"><i class="fas fa-comments"></i> Global Chat</a>
+      <a href="#" onclick="navTo('developer')"><i class="fas fa-code"></i> Developer</a>
+      <a href="#" id="adminLink" onclick="navTo('admin')" style="display:none;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+      <a href="#" id="profileLink" onclick="navTo('profile')" style="display:none;"><i class="fas fa-user"></i> My Profile</a>
+    </nav>
+  </div>
+  <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
+
+  <main class="main">
+
+    <!-- HOME -->
+    <section id="home" class="section active">
+      <div class="hero">
+        <div class="hero-content">
+          <div class="home-quote-ticker" id="homeQuoteTicker">
+            <i class="fas fa-quote-left"></i>
+            <div class="home-quote-body">
+              <p id="homeQuoteText">Loading inspiration...</p>
+              <span class="home-quote-author" id="homeQuoteAuthor"></span>
+            </div>
+          </div>
+          <h1>Download <span class="gradient">VIT PYQ Papers</span> &amp; Notes</h1>
+          <p class="hero-sub">Free CAT 1 · CAT 2 · FAT previous year question papers and study notes for VIT students across all campuses</p>
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-num purple" id="statStudents">0</div>
+              <div class="stat-label"> Students Using</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num green" id="statPapers">0</div>
+              <div class="stat-label">Papers Shared</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num orange" id="statNotes">0</div>
+              <div class="stat-label">Notes Shared</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num orange">100%</div>
+              <div class="stat-label">Flexible & Free</div>
+            </div>
+          </div>
+          <div class="campus-pills">
+            <span class="campus-pill" data-campus="Vellore" onclick="filterCampusHome('Vellore')"><i class="fas fa-university"></i> Vellore</span>
+            <span class="campus-pill" data-campus="Chennai" onclick="filterCampusHome('Chennai')"><i class="fas fa-building"></i> Chennai</span>
+            <span class="campus-pill" data-campus="Amaravati" onclick="filterCampusHome('Amaravati')"><i class="fas fa-landmark"></i> Amaravati</span>
+            <span class="campus-pill" data-campus="Bhopal" onclick="filterCampusHome('Bhopal')"><i class="fas fa-city"></i> Bhopal</span>
+            <span class="campus-pill" data-campus="Bangalore" onclick="filterCampusHome('Bangalore')"><i class="fas fa-building"></i> Bangalore</span>
+          </div>
+        </div>
+      </div>
+
+      <section class="announcement-section" id="announcementSection" aria-label="Announcements" hidden>
+        <div class="announcement-pattern"></div>
+        <div class="announcement-inner">
+          <div class="announcement-kicker"><i class="fas fa-bullhorn"></i> Latest updates</div>
+          <div id="announcementList" class="announcement-list"></div>
+        </div>
+      </section>
+
+      <div class="container home-layout">
+        <!-- Live search (homepage) -->
+        <div class="home-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="homeSearch" placeholder="Type to search papers instantly..." oninput="liveSearchHome(this.value)" autocomplete="off" />
+        </div>
+
+        <div class="home-filter-row">
+          <button type="button" class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterBar()">
+            <i class="fas fa-sliders-h"></i> Filters
+          </button>
+          <div class="filter-bar" id="filterBar">
+            <div class="filter-bar-rows">
+              <div class="filter-row">
+                <span class="fg-label">Exam</span>
+                <label class="fchip"><input type="checkbox" data-filter="cat" value="CAT1" onchange="applyHomeFilters()" /> CAT 1</label>
+                <label class="fchip"><input type="checkbox" data-filter="cat" value="CAT2" onchange="applyHomeFilters()" /> CAT 2</label>
+                <label class="fchip"><input type="checkbox" data-filter="cat" value="FAT" onchange="applyHomeFilters()" /> FAT</label>
+              </div>
+              <div class="filter-row">
+                <span class="fg-label">Sem</span>
+                <label class="fchip"><input type="checkbox" data-filter="sem" value="Fall" onchange="applyHomeFilters()" /> <i class="fas fa-leaf"></i> Fall</label>
+                <label class="fchip"><input type="checkbox" data-filter="sem" value="Winter" onchange="applyHomeFilters()" /> <i class="fas fa-snowflake"></i> Winter</label>
+              </div>
+              <div class="filter-row">
+                <span class="fg-label">Year</span>
+                <span id="yearChecks" class="year-chips"></span>
+              </div>
+              <div class="filter-row filter-actions-row">
+                <button type="button" class="btn-ghost sm" onclick="clearHomeFilters()">Clear</button>
+                <button type="button" class="filter-close-x" onclick="toggleFilterBar(false)" aria-label="Close"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact New Uploads toggle -->
+        <div class="new-uploads-bar">
+          <button type="button" class="new-uploads-toggle" id="newUploadsToggle" onclick="toggleNewUploadsPanel()">
+            <i class="fas fa-bolt"></i> New Uploads
+            <span class="new-upload-badge" id="newUploadBadge" style="display:none;">0</span>
+            <i class="fas fa-chevron-down toggle-arrow" id="newUploadsArrow"></i>
+          </button>
+          <div id="newHighlight" class="new-highlight compact" style="display:none;">
+            <div class="new-highlight-scroll">
+              <div class="carousel-track" id="newTrack"></div>
+            </div>
+            <div class="new-scroll-hint">
+              <span class="scroll-arrows"><i class="fas fa-chevron-down"></i><i class="fas fa-chevron-down"></i></span>
+              Scroll
+            </div>
+          </div>
+        </div>
+
+        <div class="home-papers-area">
+            <div class="carousel-wrap" id="homeCarousel">
+              <button class="carousel-arrow left" onclick="carouselPrev()" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+              <div class="carousel-track" id="carouselTrack"></div>
+              <button class="carousel-arrow right" onclick="carouselNext()" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <div id="homePapersEmpty" class="empty-state" style="display:none;">
+              <i class="fas fa-folder-open"></i>
+              <p>No papers found. Message in global chat for someone to upload.</p>
+            </div>
+        </div>
+
+        <section class="home-notes-area" id="homeNotesSection" hidden>
+          <div class="home-notes-heading">
+            <div><span class="eyebrow">Shared study material</span><h2 class="section-title">Notes</h2></div>
+            <div class="carousel-controls">
+              <span id="notesPageLabel" class="muted">1 / 1</span>
+            </div>
+          </div>
+          <div class="home-notes-carousel">
+            <button class="carousel-arrow left" type="button" onclick="changeNotesPage(-1)" aria-label="Previous notes"><i class="fas fa-chevron-left"></i></button>
+            <div id="homeNotesGrid" class="home-notes-grid"></div>
+            <button class="carousel-arrow right" type="button" onclick="changeNotesPage(1)" aria-label="Next notes"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </section>
+
+        <section class="other-products" id="studentTools" aria-label="Student tools">
+          <div class="other-products-heading"><span class="eyebrow">Plan your semester</span><h2>Student tools</h2></div>
+          <div class="product-links">
+            <button type="button" class="product-link" onclick="showSection('calculators')"><i class="fas fa-calculator"></i><span><strong>GPA &amp; CGPA predictor</strong><small>Estimate results from credits and expected grades</small></span><i class="fas fa-arrow-right"></i></button>
+            <button type="button" class="product-link" onclick="showSection('timetable')"><i class="fas fa-calendar-week"></i><span><strong>VIT timetable planner</strong><small>Build a weekly planner with VIT slot timings</small></span><i class="fas fa-arrow-right"></i></button>
+          </div>
+        </section>
+
+        <!--Student Feedback -->
+        <div class="feedback-section" id="feedbackSection">
+          <h2 class="section-title feedback-heading"><i class="fas fa-comments"></i> Student Feedback</h2>
+          <div class="feedback-stage">
+            <div class="feedback-credits" id="feedbackCredits"></div>
+          </div>
+          <div class="feedback-actions">
+            <button type="button" class="btn-primary" onclick="openFeedbackForm()"><i class="fas fa-pen"></i> Send Feedback</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MEDIA -->
+    <section id="papers" class="section">
+      <div class="container">
+        <h2 class="section-title">Media</h2>
+        <div class="media-tabs" role="tablist" aria-label="Media type">
+          <button type="button" class="tab active" id="mediaPapersTab" role="tab" aria-selected="true" onclick="setMediaMode('papers')"><i class="fas fa-file-alt"></i> Papers</button>
+          <button type="button" class="tab" id="mediaNotesTab" role="tab" aria-selected="false" onclick="setMediaMode('notes')"><i class="fas fa-sticky-note"></i> Notes</button>
+        </div>
+        <div id="mediaPapersPanel" class="media-panel">
+          <div class="search-bar"><i class="fas fa-search"></i><input type="text" id="paperSearch" placeholder="Search papers by subject, course code or campus..." oninput="renderPapers()" /></div>
+          <button type="button" class="filter-toggle-btn media-filter-toggle" onclick="toggleMediaFilters('papers')"><i class="fas fa-sliders-h"></i> Filters</button>
+          <div id="paperMediaFilters" class="media-filter-options" hidden>
+            <select id="paperFilterCategory" aria-label="Filter by exam" onchange="renderPapers()"><option value="">All exams</option><option value="CAT1">CAT 1</option><option value="CAT2">CAT 2</option><option value="FAT">FAT</option></select>
+            <select id="paperFilterSemester" aria-label="Filter by semester" onchange="renderPapers()"><option value="">All semesters</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select>
+            <select id="paperFilterYear" aria-label="Filter by year" onchange="renderPapers()"><option value="">All years</option></select>
+            <select id="paperFilterCampus" aria-label="Filter by campus" onchange="renderPapers()"><option value="">All campuses</option></select>
+            <div class="media-file-types" role="group" aria-label="Filter papers by file type">
+              <label class="media-file-chip"><input type="checkbox" id="paperFilterPdf" onchange="renderPapers()" /> PDF</label>
+              <label class="media-file-chip"><input type="checkbox" id="paperFilterImage" onchange="renderPapers()" /> Image</label>
+            </div>
+          </div>
+          <div id="papersGrid" class="papers-grid"></div>
+          <div id="papersEmpty" class="empty-state" style="display:none;"><i class="fas fa-folder-open"></i><p>No papers match these filters.</p></div>
+        </div>
+        <div id="mediaNotesPanel" class="media-panel" style="display:none;">
+          <div class="search-bar"><i class="fas fa-search"></i><input type="text" id="noteSearch" placeholder="Search notes by subject, course code or campus..." oninput="renderNotesMedia()" /></div>
+          <button type="button" class="filter-toggle-btn media-filter-toggle" onclick="toggleMediaFilters('notes')"><i class="fas fa-sliders-h"></i> Filters</button>
+          <div id="noteMediaFilters" class="media-filter-options" hidden>
+            <select id="noteFilterSemester" aria-label="Filter notes by semester" onchange="renderNotesMedia()"><option value="">All semesters</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select>
+            <select id="noteFilterYear" aria-label="Filter notes by year" onchange="renderNotesMedia()"><option value="">All years</option></select>
+            <select id="noteFilterCampus" aria-label="Filter notes by campus" onchange="renderNotesMedia()"><option value="">All campuses</option></select>
+            <div class="media-file-types" role="group" aria-label="Filter notes by file type">
+              <label class="media-file-chip"><input type="checkbox" id="noteFilterPdf" onchange="renderNotesMedia()" /> PDF</label>
+              <label class="media-file-chip"><input type="checkbox" id="noteFilterImage" onchange="renderNotesMedia()" /> Image</label>
+            </div>
+          </div>
+          <div id="notesGrid" class="papers-grid"></div>
+          <div id="notesEmpty" class="empty-state" style="display:none;"><i class="fas fa-folder-open"></i><p>No notes match these filters.</p></div>
+        </div>
+      </div> 
+    </section>
+
+    <!-- UPLOAD -->
+    <section id="upload" class="section">
+      <div class="container narrow">
+        <div class="card">
+          <div class="upload-tabs" role="tablist" aria-label="Upload type">
+            <button type="button" class="tab active" id="uploadPaperTab" onclick="setUploadMode('paper')">Upload paper</button>
+            <button type="button" class="tab" id="uploadNoteTab" onclick="setUploadMode('note')">Upload notes</button>
+          </div>
+          <aside class="upload-guidelines" role="note" aria-label="Upload rules">
+            <strong><i class="fas fa-shield-alt"></i> Upload rules</strong>
+            <p>VITPYQ is an independent student community created by VITians; it is not an official VIT website and is not affiliated with VIT. Upload only accurate, authentic VIT question papers or notes that you have permission to share. False or misleading material, personal or sensitive information, and inappropriate or unauthorized content are prohibited. Reported content may be reviewed and removed by admins; serious or repeated violations may lead to account suspension or termination.</p>
+          </aside>
+          <div id="uploadPaperPanel">
+          <h2><i class="fas fa-cloud-upload-alt"></i> Upload Question Paper</h2>
+          <p class="muted">Earn <strong>1,000 ZX</strong> per paper. Preview before submitting.</p>
+          <form id="uploadForm" onsubmit="handleUpload(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Subject *</label>
+                <input type="text" id="upSubject" required placeholder="e.g. Digital Logic Design" />
+              </div>
+              <div class="form-group">
+                <label>Course Code *</label>
+                <input type="text" id="upCode" required placeholder="e.g. ECE2001" />
+              </div>
+              <div class="form-group">
+                <label>Slot</label>
+                <input type="text" id="upSlot" placeholder="e.g. A1 / Theory" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Year *</label>
+                <select id="upYear" required></select>
+              </div>
+              <div class="form-group">
+                <label>Semester *</label>
+                <select id="upSem" required>
+                  <option value="Fall">Fall Semester</option>
+                  <option value="Winter">Winter Semester</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Exam Type *</label>
+                <select id="upCat" required>
+                  <option value="CAT1">CAT 1</option>
+                  <option value="CAT2">CAT 2</option>
+                  <option value="FAT">FAT</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Campus *</label>
+              <select id="upCampus" required>
+                <option value="Vellore">Vellore</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Amaravati">Amaravati</option>
+                <option value="Bhopal">Bhopal</option>
+                <option value="Bangalore">Bangalore</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>File (PDF / Image) *</label>
+              <div class="dropzone" id="dropzone" onclick="document.getElementById('upFile').click()">
+                <i class="fas fa-file-upload"></i>
+                <p id="dropText">Click or drop PDF / image here</p>
+                <input type="file" id="upFile" accept=".pdf,image/*" hidden required />
+              </div>
+            </div>
+            <div id="previewBox" class="preview-box" style="display:none;">
+              <div class="preview-header">
+                <span>Preview</span>
+                <button type="button" class="btn-ghost sm" onclick="clearPreview()"><i class="fas fa-times"></i> Clear</button>
+              </div>
+              <iframe id="pdfPreview" class="pdf-preview" title="PDF Preview"></iframe>
+              <canvas id="pdfPreviewCanvas" class="pdf-preview-canvas" style="display:none;"></canvas>
+              <div id="paperPdfPreviewFallback" class="pdf-preview-fallback" hidden><i class="fas fa-file-pdf"></i><span class="pdf-preview-filename"></span><a class="btn-outline sm" target="_blank" rel="noopener">Open PDF</a></div>
+              <img id="imgPreview" class="img-preview" alt="Preview" style="display:none;" />
+            </div>
+            <button type="submit" class="btn-primary full" id="uploadBtn"><i class="fas fa-upload"></i> Upload Paper</button>
+          </form>
+          </div>
+          <div id="uploadNotePanel" style="display:none;">
+            <h2><i class="fas fa-sticky-note"></i> Upload Study Notes</h2>
+            <p class="muted">Share notes with students across VIT campuses.</p>
+            <form id="noteUploadForm" onsubmit="handleNoteUpload(event)">
+              <div class="form-group"><label>Subject *</label><input type="text" id="noteSubject" required placeholder="e.g. Discrete Mathematics" /></div>
+              <div class="form-group"><label>Course code</label><input type="text" id="noteCode" placeholder="e.g. MAT2001" /></div>
+              <div class="form-row">
+                <div class="form-group"><label>Year *</label><select id="noteYear" required></select></div>
+                <div class="form-group"><label>Semester *</label><select id="noteSemester" required><option value="Fall">Fall Semester</option><option value="Winter">Winter Semester</option></select></div>
+              </div>
+              <div class="form-group"><label>Campus *</label><select id="noteCampus" required><option value="Vellore">Vellore</option><option value="Chennai">Chennai</option><option value="Amaravati">Amaravati</option><option value="Bhopal">Bhopal</option><option value="Bangalore">Bangalore</option></select></div>
+              <div class="form-group">
+                <label>Notes file (PDF / image) *</label>
+                <div class="dropzone note-dropzone" id="noteDropzone" onclick="document.getElementById('noteFile').click()">
+                  <i class="fas fa-file-upload"></i>
+                  <p id="noteDropText">Click to choose notes PDF / image</p>
+                  <input type="file" id="noteFile" accept=".pdf,image/*" hidden required />
+                </div>
+              </div>
+              <div id="notePreviewBox" class="preview-box" style="display:none;"><div class="preview-header"><span>Preview</span><button type="button" class="btn-ghost sm" onclick="clearNotePreview()"><i class="fas fa-times"></i> Clear</button></div><iframe id="notePdfPreview" class="pdf-preview" title="Notes PDF preview"></iframe><canvas id="notePdfPreviewCanvas" class="pdf-preview-canvas" style="display:none;"></canvas><div id="notePdfPreviewFallback" class="pdf-preview-fallback" hidden><i class="fas fa-file-pdf"></i><span class="pdf-preview-filename"></span><a class="btn-outline sm" target="_blank" rel="noopener">Open PDF</a></div><img id="noteImagePreview" class="img-preview" alt="Notes preview" style="display:none;" /></div>
+              <button type="submit" class="btn-primary full"><i class="fas fa-upload"></i> Upload notes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="calculators" class="section">
+      <div class="container narrow tools-container">
+        <div class="tool-page-top"><button type="button" class="tool-back-button" onclick="returnToStudentTools()" aria-label="Back to student tools" title="Back to student tools"><i class="fas fa-arrow-left"></i></button></div>
+        <div class="tools-heading"><span class="eyebrow">Academic tools</span><h1>GPA &amp; CGPA predictor</h1><p class="muted">VIT grades are relative to each course. Enter your expected final grades to estimate GPA.</p></div>
+        <div class="tabs calculator-tabs" role="tablist" aria-label="Calculator type">
+          <button type="button" class="tab active" id="gpaTab" onclick="setCalculatorMode('gpa')">GPA</button>
+          <button type="button" class="tab" id="cgpaTab" onclick="setCalculatorMode('cgpa')">CGPA</button>
+        </div>
+        <div id="gpaPanel" class="calculator-panel">
+          <div class="tool-panel-heading"><div><h2>Semester GPA</h2><p class="muted">Add each subject, its credit count and expected grade.</p><p class="grade-formula">Semester GPA will be calculated.</p></div><button type="button" class="btn-outline sm" onclick="addGpaRow()"><i class="fas fa-plus"></i> Subject</button></div>
+          <div class="grade-table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Credits</th><th>Grade</th><th></th></tr></thead><tbody id="gpaRows"></tbody></table></div>
+          <div class="calculator-result"><span>Estimated GPA</span><strong id="gpaResult">0.00</strong></div>
+          <div class="tool-actions"><button type="button" class="btn-primary" onclick="calculateGpa()"><i class="fas fa-calculator"></i> Calculate GPA</button><button type="button" class="btn-outline" onclick="previewToolExport('gpa')"><i class="fas fa-file-export"></i> Export / Print</button></div>
+        </div>
+        <div id="cgpaPanel" class="calculator-panel" style="display:none;">
+          <div class="tool-panel-heading"><div><h2>CGPA</h2><p class="muted">Enter each semester’s GPA and earned credits.</p><p class="grade-formula">Semester CGPA will be calculated</p></div><button type="button" class="btn-outline sm" onclick="addCgpaRow()"><i class="fas fa-plus"></i> Semester</button></div>
+          <div class="grade-table-wrap"><table class="grade-table"><thead><tr><th>Semester</th><th>GPA</th><th>Credits</th><th></th></tr></thead><tbody id="cgpaRows"></tbody></table></div>
+          <div class="calculator-result"><span>Estimated CGPA</span><strong id="cgpaResult">0.00</strong></div>
+          <div class="tool-actions"><button type="button" class="btn-primary" onclick="calculateCgpa()"><i class="fas fa-calculator"></i> Calculate CGPA</button><button type="button" class="btn-outline" onclick="previewToolExport('cgpa')"><i class="fas fa-file-export"></i> Export / Print</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="timetable" class="section">
+      <div class="container timetable-container">
+        <div class="tool-page-top"><button type="button" class="tool-back-button" onclick="returnToStudentTools()" aria-label="Back to student tools" title="Back to student tools"><i class="fas fa-arrow-left"></i></button></div>
+        <div class="tools-heading"><span class="eyebrow">Weekly planner</span><h1>VIT timetable planner</h1><p class="muted">Choose theory or lab slots. Classes fill their weekly meeting cells automatically.</p></div>
+        <div class="timetable-toolbar"><label for="timetableName">Timetable name</label><input type="text" id="timetableName" maxlength="50" value="My VIT timetable" oninput="saveTimetableName()" /><button type="button" class="btn-outline" onclick="previewToolExport('timetable')"><i class="fas fa-file-export"></i> Export / Print</button></div>
+        <form class="timetable-course-form" id="timetableCourseForm" onsubmit="addTimetableCourse(event)">
+          <div class="timetable-course-field"><label for="timetableCourseName">Course</label><input type="text" id="timetableCourseName" maxlength="80" placeholder="e.g. Engineering Mathematics" required /></div>
+          <div class="timetable-course-field"><label for="timetableCourseType">Class type</label><select id="timetableCourseType" onchange="updateTimetableSlotOptions()"><option value="theory">Theory</option><option value="lab">Lab</option></select></div>
+          <div class="timetable-slot-controls" id="timetableTheoryControls">
+            <label for="timetableTheoryBase">Theory slot</label>
+            <select id="timetableTheoryBase" onchange="updateTimetableSlotOptions()"><option value="A1">A1</option><option value="B1">B1</option><option value="C1">C1</option><option value="D1">D1</option><option value="E1">E1</option><option value="F1">F1</option><option value="G1">G1</option></select>
+            <label for="timetableSlotCodes">Combination</label>
+            <select id="timetableSlotCodes" onchange="previewTimetableClasses()" required></select>
+          </div>
+          <div class="timetable-slot-controls lab-slot-controls" id="timetableLabControls" hidden></div>
+          <span class="timetable-class-count" id="timetableClassCount" aria-live="polite">Enter valid slot codes</span>
+          <button type="submit" class="btn-primary timetable-course-submit"><i class="fas fa-plus"></i> <span id="timetableSubmitLabel">Add Course</span></button>
+        </form>
+        <div id="timetableCourses" class="timetable-courses" aria-live="polite"></div>
+        <div id="timetableGrid" class="timetable-grid-wrap"></div>
+        <p class="timetable-legend"><span class="theory-key"></span>Theory <span class="lab-key"></span>Lab <span class="empty-key"></span>Free slot · Clashing slot combinations are rejected.</p>
+      </div>
+    </section>
+
+    <!-- STORE -->
+    <section id="store" class="section">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-store"></i> ZX Store</h2>
+        <p class="center muted">Spend ZX on badges and profile design items. Default badge is Bronze.</p>
+        <div class="vcash-banner" id="storeVcash">Your balance: <strong>0</strong> ZX</div>
+        <h3 class="store-subtitle">Badges</h3>
+        <div class="store-grid" id="storeBadgesGrid">
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-medal" style="color:#c0c0c0;"></i></div>
+            <h3>Silver Badge</h3>
+            <p class="price">15,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('silver',15000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-medal" style="color:#fbbf24;"></i></div>
+            <h3>Gold Badge</h3>
+            <p class="price">30,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('gold',30000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-gem" style="color:#a78bfa;"></i></div>
+            <h3>Platinum Badge</h3>
+            <p class="price">35,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('platinum',35000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-gem" style="color:#22d3ee;"></i></div>
+            <h3>Diamond Badge</h3>
+            <p class="price">45,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('diamond',45000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-gem" style="color:#e11d48;"></i></div>
+            <h3>Ruby Badge</h3>
+            <p class="price">55,000 ZX</p>
+            <button class="btn-outline" onclick="buyBadge('ruby',55000)">Buy</button>
+          </div>
+          <div class="store-card store-card-premium">
+            <div class="badge-preview"><i class="fas fa-check-circle" style="color:#1d9bf0;"></i></div>
+            <h3>Verified <i class="fas fa-check-circle" style="color:#1d9bf0;font-size:0.85rem;"></i></h3>
+            <p class="price">50,000 ZX</p>
+            <p class="muted" style="font-size:0.72rem;margin-bottom:0.5rem;">Premium blue tick</p>
+            <button class="btn-outline" onclick="buyVerified()">Buy</button>
+          </div>
+        </div>
+        <h3 class="store-subtitle" style="margin-top:2rem;">Design Studio</h3>
+        <div class="store-grid" id="storeDesignGrid">
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-border-all" style="color:#f472b6;"></i></div>
+            <h3>Rainbow Frame</h3>
+            <p class="price">8,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('frame_rainbow',8000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-sun" style="color:#fbbf24;"></i></div>
+            <h3>Glow Effect</h3>
+            <p class="price">12,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('glow',12000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-moon" style="color:#94a3b8;"></i></div>
+            <h3>Dark Theme Pack</h3>
+            <p class="price">10,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('dark_pack',10000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-signature" style="color:#34d399;"></i></div>
+            <h3>Custom Title</h3>
+            <p class="price">20,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('title',20000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-circle-notch" style="color:#22d3ee;"></i></div>
+            <h3>Neon Ring</h3>
+            <p class="price">9,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('neon_ring',9500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-star" style="color:#f59e0b;"></i></div>
+            <h3>Star Pad</h3>
+            <p class="price">7,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('star_pad',7000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-fire" style="color:#ef4444;"></i></div>
+            <h3>Fire Frame</h3>
+            <p class="price">14,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('fire_frame',14000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-snowflake" style="color:#67e8f9;"></i></div>
+            <h3>Frost Effect</h3>
+            <p class="price">11,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('frost',11000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-heart" style="color:#fb7185;"></i></div>
+            <h3>Heart Pad</h3>
+            <p class="price">6,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('heart_pad',6500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-bolt" style="color:#a78bfa;"></i></div>
+            <h3>Pulse Glow</h3>
+            <p class="price">13,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('pulse',13000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-rainbow" style="color:#34d399;"></i></div>
+            <h3>Aurora Frame</h3>
+            <p class="price">16,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('aurora_frame',16000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-square" style="color:#94a3b8;"></i></div>
+            <h3>Glass Pad</h3>
+            <p class="price">8,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('glass_pad',8500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-crown" style="color:#fbbf24;"></i></div>
+            <h3>Crown Icon</h3>
+            <p class="price">22,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('crown',22000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-water" style="color:#38bdf8;"></i></div>
+            <h3>Wave Glow</h3>
+            <p class="price">11,500 ZX</p>
+            <button class="btn-outline" onclick="buyItem('wave_glow',11500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="badge-preview"><i class="fas fa-border-all" style="color:#c084fc;"></i></div>
+            <h3>Pixel Border</h3>
+            <p class="price">9,000 ZX</p>
+            <button class="btn-outline" onclick="buyItem('pixel_border',9000)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="store-icon"><i class="fas fa-sparkle"></i></div>
+            <h4>Sparkle Trail</h4>
+            <p class="muted">Subtle sparkle on avatar</p>
+            <div class="store-price">10,500 ZX</div>
+            <button class="btn-outline" onclick="buyItem('sparkle',10500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="store-icon"><i class="fas fa-moon"></i></div>
+            <h4>Midnight Mode</h4>
+            <p class="muted">Deep night profile theme</p>
+            <div class="store-price">12,500 ZX</div>
+            <button class="btn-outline" onclick="buyItem('midnight',12500)">Buy</button>
+          </div>
+          <div class="store-card">
+            <div class="store-icon"><i class="fas fa-bolt"></i></div>
+            <h4>Lightning Edge</h4>
+            <p class="muted">Electric border pulse</p>
+            <div class="store-price">15,000 ZX</div>
+            <button class="btn-outline" onclick="buyItem('lightning',15000)">Buy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section id="leaderboard" class="section">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-trophy"></i> Leaderboard</h2>
+        <section class="leader-highlights-section" id="leaderHighlightsSection" aria-label="Leaderboard highlights" style="display:none;">
+          <div class="leader-highlights-heading"><span class="highlights-mark"><i class="fas fa-sparkles"></i></span><h3>Highlights</h3></div>
+          <div id="lbHighlights" class="lb-highlights" style="display:none;"></div>
+        </section>
+        <div class="tabs">
+          <button class="tab active" data-tab="uploads" onclick="switchLbTab('uploads')">Most Uploads</button>
+          <button class="tab" data-tab="vcash" onclick="switchLbTab('vcash')">Most ZX</button>
+          <button class="tab" data-tab="downloads" onclick="switchLbTab('downloads')">Most Downloads</button>
+        </div>
+        <div class="search-bar leaderboard-search">
+          <i class="fas fa-search"></i>
+          <input type="search" id="leaderboardSearch" placeholder="Search users by name, username, or branch..." oninput="renderLeaderboard()" autocomplete="off" />
+        </div>
+        <div id="leaderboardList" class="leader-list"></div>
+        <p class="center muted" id="lbEmpty" style="display:none;margin-top:1.5rem;">No users yet.</p>
+      </div>
+    </section>
+
+    <!-- ZX CHAT -->
+    <section id="chat" class="section">
+      <div class="container narrow">
+        <h2 class="section-title"><i class="fas fa-comments"></i> Chats</h2>
+        <div class="chat-hub-actions">
+          <button type="button" class="btn-outline" id="showFriendsChatBtn" onclick="showChatView('friends')"><i class="fas fa-user-friends"></i> Messages</button>
+          <button type="button" class="btn-outline" id="showGlobalChatBtn" onclick="showChatView('global')"><i class="fas fa-globe"></i> Global chat</button>
+        </div>
+        <div id="friendsChatView" class="chat-view">
+          <div class="chat-friends-tools">
+            <button type="button" class="btn-outline" onclick="openFriendsSearch()"><i class="fas fa-user-plus"></i> Add friends</button>
+          </div>
+          <div class="card personal-chat-panel" id="personalChatPanel">
+            <div class="pc-layout">
+              <div id="pcFriendsList" class="pc-friends"></div>
+              <div class="pc-thread">
+                <div class="pc-thread-head" id="pcThreadHead">Select a chat</div>
+                <div class="chat-messages" id="pcMessages"></div>
+                <form class="chat-input-row" onsubmit="sendPersonalChat(event)">
+                  <input type="text" id="pcInput" placeholder="Message..." maxlength="500" />
+                  <button type="submit" class="btn-primary" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="globalChatView" class="chat-view" style="display:none;">
+          <p class="center muted global-chat-guidelines">Keep chat respectful and study-focused. No harassment, spam, personal data, or unauthorized content. Reports are reviewed by moderators; serious or repeated violations may result in account termination. Read the <a href="privacy.html">Privacy Policy</a> and <a href="terms.html">Community Terms</a>.</p>
+          <div class="chat-box card" id="globalChatBox">
+            <div id="chatMessages" class="chat-messages"></div>
+            <form class="chat-input-row" onsubmit="sendChat(event)">
+              <input type="text" id="chatInput" placeholder="Write a message..." maxlength="500" required />
+              <button type="submit" class="btn-primary" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+            </form>
+            <div class="chat-toolbar">
+              <button type="button" class="btn-ghost sm" onclick="clearUserChat()"><i class="fas fa-broom"></i> Clear my chat</button>
+              <span class="muted" style="font-size:0.75rem;">Admin messages stay pinned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVELOPER -->
+    <section id="developer" class="section">
+      <div class="container narrow">
+        <div class="card developer-card">
+          <div class="dev-photo-wrap">
+            <img src="logov2.jpeg" type="image/jpeg" alt="ZR7, creator of VITPYQ Papers" class="dev-photo" />
+            <span class="badge-pin diamond"><i class="fas fa-gem"></i></span>
+          </div>
+          <h2>ZR7</h2>
+          <p class="dev-role">Student · VIT Vellore</p>
+          <p class="dev-bio">Engineer and creator of VITPYQ Papers, an independent project sharing VIT University question papers and study notes with VITians.</p>
+          <div class="dev-meta">
+            <span><i class="fas fa-university"></i> VITian</span>
+            <span><i class="fas fa-graduation-cap"></i> CSE</span>
+            <span><i class="fas fa-code"></i> Engineering</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin" class="section">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+        <div class="tabs" style="margin-bottom:1rem;">
+          <button class="tab active" id="adminTabPapers" onclick="switchAdminTab('papers')">Papers</button>
+          <button class="tab" id="adminTabUsers" onclick="switchAdminTab('users')">Users</button>
+          <button class="tab" id="adminTabFeedback" onclick="switchAdminTab('feedback')">Student Feedback</button>
+          <button class="tab" id="adminTabAnnouncements" onclick="switchAdminTab('announcements')">Announcements</button>
+        </div>
+        <div id="adminPapersPanel">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="adminPaperSearch" placeholder="Search papers by subject, code, campus..." oninput="renderAdmin()" />
+          </div>
+          <div id="adminPapers" class="admin-list"></div>
+        </div>
+        <div id="adminUsersPanel" style="display:none;">
+          <div class="admin-campus-filters" role="group" aria-label="Filter students by campus">
+            <button type="button" class="tab active" data-admin-campus="" onclick="filterAdminUsers('')">All campuses</button>
+            <button type="button" class="tab" data-admin-campus="Amaravati" onclick="filterAdminUsers('Amaravati')">Amaravati</button>
+            <button type="button" class="tab" data-admin-campus="Vellore" onclick="filterAdminUsers('Vellore')">Vellore</button>
+            <button type="button" class="tab" data-admin-campus="Chennai" onclick="filterAdminUsers('Chennai')">Chennai</button>
+            <button type="button" class="tab" data-admin-campus="Bhopal" onclick="filterAdminUsers('Bhopal')">Bhopal</button>
+            <button type="button" class="tab" data-admin-campus="Bangalore" onclick="filterAdminUsers('Bangalore')">Bangalore</button>
+          </div>
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="adminUserSearch" placeholder="Search users by name, username, email..." oninput="renderAdminUsers()" />
+          </div>
+          <div id="adminUsers" class="admin-list"></div>
+        </div>
+        <div id="adminFeedbackPanel" style="display:none;">
+          <p class="muted" style="margin-bottom:0.75rem;">All student feedback. Delete removes it permanently from the homepage.</p>
+          <div id="adminFeedbackList" class="admin-list"></div>
+        </div>
+        <div id="adminAnnouncementsPanel" style="display:none;">
+          <form class="admin-announcement-form" onsubmit="postAnnouncement(event)">
+            <label for="announcementTitle">Title</label>
+            <input id="announcementTitle" maxlength="100" required placeholder="e.g. FAT paper uploads are open" />
+            <label for="announcementBody">Message</label>
+            <textarea id="announcementBody" maxlength="1200" rows="4" required placeholder="Write an update for students"></textarea>
+            <button class="btn-primary" type="submit"><i class="fas fa-bullhorn"></i> Publish announcement</button>
+          </form>
+          <div id="adminAnnouncementsList" class="admin-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vault -->
+    <div class="modal" id="vaultModal">
+      <div class="modal-content vault-modal">
+        <button class="modal-close" onclick="closeVault()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-vault"></i> Vault</h3>
+        <p class="muted" style="margin:0.35rem 0 0.85rem;font-size:0.85rem;">Owned items — Apply or Remove anytime without rebuying.</p>
+        <div id="vaultItems" class="vault-items"></div>
+        <div id="vaultTitleEditor" class="form-group" style="display:none;margin-top:1rem;">
+          <label>Custom Title text</label>
+          <input type="text" id="vaultTitleInput" maxlength="40" placeholder="e.g. Sharing knowledge @ VIT" />
+          <button type="button" class="btn-primary sm" style="margin-top:0.5rem;" onclick="saveCustomTitle()">Save title</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin message before terminate -->
+    <div class="modal" id="termModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeTermModal()"><i class="fas fa-times"></i></button>
+        <h3>Message &amp; Terminate</h3>
+        <p class="muted" id="termUserLabel" style="margin:0.5rem 0 0.75rem;"></p>
+        <div class="form-group">
+          <label>Personal message to user (required before terminate)</label>
+          <textarea id="termMessage" rows="3" placeholder="Explain why..." style="width:100%;padding:0.65rem;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);resize:vertical;"></textarea>
+        </div>
+        <button class="btn-primary full" onclick="sendTermMessageOnly()" style="margin-bottom:0.5rem;">Send message only</button>
+        <button class="btn-ghost full" style="color:var(--red);border-color:var(--red);" onclick="confirmTerminate()">Terminate account</button>
+      </div>
+    </div>
+
+    <!-- AUTH -->
+    <section id="auth" class="section">
+      <div class="container narrow">
+        <div class="card auth-card" id="authCard">
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab" onclick="switchAuth('login')">Login</button>
+            <button class="auth-tab" id="regTab" onclick="switchAuth('register')">Register</button>
+          </div>
+          <button type="button" class="btn-google" onclick="googleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18" />
+            Continue with Google
+          </button>
+          <div class="form-group auth-campus-picker">
+            <label id="authCampusLabel">Campus</label>
+            <input type="hidden" id="authCampus" value="" />
+            <button type="button" class="campus-select-trigger" id="campusSelectTrigger" aria-haspopup="listbox" aria-expanded="false" onclick="toggleCampusOptions()">
+              <span id="authCampusValue">Choose your campus</span><i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="campus-option-list" id="campusOptionList" role="listbox" aria-labelledby="authCampusLabel" hidden>
+              <button type="button" role="option" data-campus="Vellore" onclick="selectAuthCampus('Vellore')"><span>Vellore</span><small>@vitstudent.ac.in</small></button>
+              <button type="button" role="option" data-campus="Chennai" onclick="selectAuthCampus('Chennai')"><span>Chennai</span><small>@vitstudent.ac.in</small></button>
+              <button type="button" role="option" data-campus="Bangalore" onclick="selectAuthCampus('Bangalore')"><span>Bangalore</span><small>@vitstudent.ac.in</small></button>
+              <button type="button" role="option" data-campus="Amaravati" onclick="selectAuthCampus('Amaravati')"><span>Amaravati</span><small>@vitap.ac.in</small></button>
+              <button type="button" role="option" data-campus="Bhopal" onclick="selectAuthCampus('Bhopal')"><span>Bhopal</span><small>@vitbhopal.ac.in</small></button>
+            </div>
+            <small class="muted">Google sign-in uses the campus domain shown above. Personal email addresses are for account registration.</small>
+          </div>
+          <div class="auth-divider"><span>or</span></div>
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="loginEmail" required placeholder="you@gmail.com / yahoo / outlook…" />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="loginPass" required />
+            </div>
+            <button type="submit" class="btn-primary full">Login</button>
+            <button type="button" class="btn-link" onclick="showForgot()">Forgot password?</button>
+          </form>
+          <form id="forgotForm" class="hidden" onsubmit="handleForgot(event)">
+            <p class="muted" style="margin-bottom:0.75rem;font-size:0.88rem;">Enter the email you registered with (Gmail, Yahoo, Outlook, etc.). We will send you a secure password reset link. VIT student accounts use Google sign-in only.</p>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="forgotEmail" required placeholder="you@gmail.com" />
+            </div>
+            <div id="otpStep" class="hidden">
+              <div class="form-group">
+                <label>OTP</label>
+                <input type="text" id="forgotOtp" placeholder="6-digit OTP" maxlength="6" />
+              </div>
+              <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="forgotNewPass" minlength="6" placeholder="New password" />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary full" id="forgotBtn">Send reset link</button>
+            <button type="button" class="btn-link" onclick="switchAuth('login')">Back to Login</button>
+          </form>
+          <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+            <div class="form-row">
+              <div class="form-group"><label>First Name</label><input type="text" id="regFirst" required /></div>
+              <div class="form-group"><label>Last Name</label><input type="text" id="regLast" required /></div>
+            </div>
+            <div class="form-group"><label>Username (public)</label><input type="text" id="regUser" required placeholder="unique_username" /></div>
+            <div class="form-group"><label>Branch / Degree</label><input type="text" id="regBranch" required placeholder="e.g. CSE, MBA, M.Tech ..." /></div>
+            <div class="form-group"><label>Personal email</label><input type="email" id="regEmail" required placeholder="you@gmail.com" /><small class="muted">Use a personal email to register. Campus email addresses must continue with Google.</small></div>
+            <div class="form-group"><label>Password</label><input type="password" id="regPass" required minlength="6" placeholder="At least 6 characters" /></div>
+            <button type="submit" class="btn-primary full">Create Account</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" class="section">
+      <div class="container narrow">
+        <div class="card profile-card">
+          <div class="profile-header">
+            <div class="avatar-wrap xl">
+              <img id="profAvatar" src="" alt="" />
+              <span class="badge-pin" id="profBadge"><i class="fas fa-medal"></i></span>
+            </div>
+            <div>
+              <h2 id="profName">User</h2> <span id="profVerified" class="verified-tick" style="display:none;" title="Verified"><i class="fas fa-check-circle"></i></span>
+              <p class="muted" id="profUser">@username</p>
+              <p class="muted" id="profBranch">Branch</p>
+            </div>
+          </div>
+          <div class="profile-sub card" id="profileSubscription">
+            <h4><i class="fas fa-crown"></i> Subscription plan</h4>
+            <div id="subGuestMsg" class="sub-guest" style="display:none;">
+              <p class="muted">Your <strong>lifetime free plan</strong> is available when you log in.</p>
+            </div>
+            <div id="subActiveMsg" class="sub-active">
+              <div class="sub-plan-row">
+                <span class="sub-badge"><i class="fas fa-check-circle"></i> Active</span>
+                <span id="subPlanName">Lifetime Free</span>
+              </div>
+              <p class="muted" id="subTill">No expiry</p>
+              <p class="sub-hint muted" id="subHint">Papers and notes are free to view and download.</p>
+            </div>
+          </div>
+          <div class="stats-row profile-stats">
+            <div class="stat-card sm clickable" onclick="showHistory('uploads')"><div class="stat-num" id="profUploads">0</div><div class="stat-label">Uploads</div></div>
+            <div class="stat-card sm clickable" onclick="showHistory('downloads')"><div class="stat-num" id="profDownloads">0</div><div class="stat-label">Downloads</div></div>
+            <div class="stat-card sm clickable" onclick="toggleFriendsList()"><div class="stat-num" id="profFriends">0</div><div class="stat-label">Friends</div></div>
+            <div class="stat-card sm"><div class="stat-num orange" id="profVcash">0</div><div class="stat-label">ZX</div></div>
+          </div>
+          <div id="friendsListBox" class="friends-list-box" style="display:none;"></div>
+          <div id="historyBox" class="history-box" style="display:none;"></div>
+          <div id="customTitleNote" class="custom-title-note" style="display:none;"></div>
+          <div class="profile-library-actions">
+            <button type="button" class="btn-outline" onclick="openPersonalLibrary('bookmarks')"><i class="fas fa-bookmark"></i> Bookmarks</button>
+            <button type="button" class="btn-outline" onclick="openPersonalLibrary('liked')"><i class="fas fa-heart"></i> Liked</button>
+          </div>
+          <section id="personalLibraryPanel" class="personal-library-panel" hidden>
+            <div class="personal-library-heading"><h3 id="personalLibraryTitle">Bookmarks</h3><button type="button" class="btn-ghost sm" onclick="closePersonalLibrary()" aria-label="Close library"><i class="fas fa-times"></i></button></div>
+            <div class="library-media-tabs" role="tablist" aria-label="Library media type">
+              <button type="button" class="tab active" id="libraryPapersTab" role="tab" aria-selected="true" onclick="setPersonalLibraryType('papers')">Papers</button>
+              <button type="button" class="tab" id="libraryNotesTab" role="tab" aria-selected="false" onclick="setPersonalLibraryType('notes')">Notes</button>
+            </div>
+            <div class="library-carousel-controls"><button type="button" class="btn-ghost sm" onclick="changeLibraryPage(-1)" aria-label="Previous library page"><i class="fas fa-chevron-left"></i></button><span id="libraryPageLabel" class="muted">1 / 1</span><button type="button" class="btn-ghost sm" onclick="changeLibraryPage(1)" aria-label="Next library page"><i class="fas fa-chevron-right"></i></button></div>
+            <div id="personalLibraryGrid" class="papers-grid library-grid"></div>
+            <p id="personalLibraryEmpty" class="muted" hidden>No saved items yet.</p>
+          </section>
+          <button type="button" class="btn-outline full" id="vaultOpenBtn" onclick="openVault()" style="display:none;margin-bottom:0.75rem;">
+            <i class="fas fa-vault"></i> Open Vault
+          </button>
+          <div id="profileViewMode">
+            <div class="privacy-toggle-row">
+              <span><i class="fas fa-lock"></i> Profile privacy</span>
+              <div class="switch-wrap">
+                <span id="privacyLabel">Public</span>
+                <label class="switch">
+                  <input type="checkbox" id="privacyToggle" onchange="togglePrivacy()" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="privacy-toggle-row" id="pushNotifRow">
+              <span><i class="fas fa-mobile-alt"></i> Device push notifications</span>
+              <div class="switch-wrap">
+                <span id="pushNotifLabel">Off</span>
+                <label class="switch">
+                  <input type="checkbox" id="pushNotifToggle" onchange="togglePushNotifications()" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <p class="muted" style="font-size:0.75rem;margin:0.25rem 0 0.75rem;">Enable notifications on this device to receive alerts while the site is closed.</p>
+            <button type="button" class="btn-outline full" onclick="openProfileEdit()"><i class="fas fa-pen"></i> Edit Profile</button>
+            <button type="button" class="btn-ghost full profile-logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log out</button>
+          </div>
+          <div id="profileEditMode" style="display:none;">
+            <div class="form-group"><label>Display Name</label><input type="text" id="editName" /></div>
+            <div class="form-group">
+              <label>Username (change once every 15 days)</label>
+              <input type="text" id="editUsername" placeholder="username" />
+              <p class="username-cooldown" id="usernameCooldownHint"></p>
+              <button type="button" class="btn-outline sm" style="margin-top:0.35rem;" onclick="editUsernameOnce()">Update Username</button>
+            </div>
+            <div class="form-group">
+              <label>Profile Photo</label>
+              <label class="file-btn" for="editPic"><i class="fas fa-image"></i> Choose Photo</label>
+              <input type="file" id="editPic" accept="image/*" onchange="onProfilePicPick(event)" hidden />
+              <span class="file-name muted" id="editPicName"></span>
+            </div>
+            <div class="form-row" style="grid-template-columns:1fr 1fr;">
+              <button type="button" class="btn-primary" onclick="saveProfile()">Save Profile</button>
+              <button type="button" class="btn-ghost" onclick="closeProfileEdit()">Cancel</button>
+            </div>
+          </div>
+          <div class="quote-ticker" id="quoteTicker">
+            <i class="fas fa-quote-left"></i>
+            <p id="quoteText">Loading inspiration...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW PAPER MODAL -->
+        <div class="modal" id="viewModal">
+      <div class="modal-content view-modal-content">
+        <button type="button" class="modal-close view-close-btn" onclick="closeViewModal()" aria-label="Close preview"><i class="fas fa-times"></i></button>
+        <div class="view-modal-header">
+          <h3 id="viewTitle">Paper</h3>
+          <div class="view-meta" id="viewMeta"></div>
+        </div>
+        <div class="view-viewer-wrap" id="viewViewerWrap">
+          <div class="pdf-viewer-tools" id="pdfViewerTools" style="display:none;">
+            <button type="button" class="btn-ghost sm" id="pdfPrevPage" aria-label="Previous PDF page"><i class="fas fa-chevron-left"></i></button>
+            <span class="pdf-page-indicator"><span id="pdfCurrentPage">1</span> / <span id="pdfPageCount">1</span></span>
+            <button type="button" class="btn-ghost sm" id="pdfNextPage" aria-label="Next PDF page"><i class="fas fa-chevron-right"></i></button>
+            <span class="pdf-tool-spacer"></span>
+            <button type="button" class="btn-ghost sm" id="pdfZoomOut" aria-label="Zoom out"><i class="fas fa-minus"></i></button>
+            <button type="button" class="btn-ghost sm" id="pdfZoomReset" aria-label="Fit page">Fit</button>
+            <button type="button" class="btn-ghost sm" id="pdfZoomIn" aria-label="Zoom in"><i class="fas fa-plus"></i></button>
+          </div>
+          <div class="pdf-render-stage" id="pdfRenderStage" style="display:none;"><canvas id="pdfPageCanvas"></canvas></div>
+          <iframe id="viewFrame" class="view-frame" title="Paper view" allowfullscreen allow="fullscreen"></iframe>
+          <object id="viewObject" class="view-object" type="application/pdf" style="display:none;"></object>
+          <img id="viewImg" class="view-img" alt="" style="display:none;" />
+        </div>
+        <div class="view-actions">
+          <div id="viewRateBox" class="view-rate-row">
+            <span class="muted" style="font-size:0.85rem;">Rate this paper:</span>
+            <span id="viewRateStars" class="view-rate-stars" title="Click a star to rate">
+              <span onclick="ratePaperFromView(1)">☆</span><span onclick="ratePaperFromView(2)">☆</span><span onclick="ratePaperFromView(3)">☆</span><span onclick="ratePaperFromView(4)">☆</span><span onclick="ratePaperFromView(5)">☆</span>
+            </span>
+            <span id="viewRateLabel" class="muted" style="font-size:0.8rem;"></span>
+          </div>
+          <button class="btn-primary" id="viewDownloadBtn" type="button"><i class="fas fa-download"></i> Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER MODAL -->
+    <div class="modal" id="userModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
+        <div class="profile-header">
+          <div class="avatar-wrap xl">
+            <img id="modalAvatar" src="" alt="" />
+            <span class="badge-pin" id="modalBadge"><i class="fas fa-medal"></i></span>
+          </div>
+          <div>
+            <h2 id="modalName">User</h2> <span id="modalVerified" class="verified-tick" style="display:none;"><i class="fas fa-check-circle"></i></span>
+            <p class="muted" id="modalUser">@username</p>
+            <span class="profile-privacy-tag" id="modalPrivacy">Public profile</span>
+            <p class="muted" id="modalBranch">Branch</p>
+          </div>
+        </div>
+        <div class="stats-row profile-stats">
+          <div class="stat-card sm clickable" onclick="showModalHistory('uploads')"><div class="stat-num" id="modalUploads">0</div><div class="stat-label">Uploads</div></div>
+          <div class="stat-card sm clickable" onclick="showModalHistory('downloads')"><div class="stat-num" id="modalDownloads">0</div><div class="stat-label">Downloads</div></div>
+          <div class="stat-card sm"><div class="stat-num" id="modalVisits">0</div><div class="stat-label">Visits</div></div>
+          <div class="stat-card sm"><div class="stat-num orange" id="modalVcash">0</div><div class="stat-label">ZX</div></div>
+        </div>
+        <div id="modalHistoryBox" class="history-box" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="slotDetailModal" aria-label="Timetable slot details">
+      <div class="modal-content slot-detail-modal">
+        <button type="button" class="modal-close" onclick="closeTimetableSlotModal()" aria-label="Close slot details"><i class="fas fa-times"></i></button>
+        <div class="slot-detail-header">
+          <div>
+            <span class="eyebrow">Slot details</span>
+            <h2 id="slotDetailTitle">A1/L1</h2>
+          </div>
+        </div>
+        <div class="slot-detail-body">
+          <label class="slot-label" for="slotDetailInput">Subject name</label>
+          <div class="slot-detail-row">
+            <input type="text" id="slotDetailInput" placeholder="Enter subject name" />
+            <button type="button" class="btn-ghost" id="slotClearBtn" onclick="clearTimetableSlot()">Clear</button>
+          </div>
+          <div class="slot-detail-preview" id="slotDetailPreview">--</div>
+          <div class="slot-detail-actions">
+            <button type="button" class="btn-primary full" id="slotSaveBtn" onclick="saveTimetableSlotFromModal()">Save slot</button>
+            <button type="button" class="btn-outline full" onclick="closeTimetableSlotModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal tool-export-overlay" id="toolExportModal" aria-label="Export preview" onclick="if(event.target===this)closeToolExportPreview()">
+    <div class="modal-content tool-export-modal">
+      <button type="button" class="modal-close" onclick="closeToolExportPreview()" aria-label="Close export preview"><i class="fas fa-times"></i></button>
+      <h2 id="toolExportTitle">Export preview</h2>
+      <iframe id="toolExportFrame" title="Print preview"></iframe>
+      <div class="tool-export-actions"><button type="button" class="btn-outline" onclick="downloadToolExcel()"><i class="fas fa-file-excel"></i> Excel</button><button type="button" class="btn-primary" onclick="printToolPreview()"><i class="fas fa-file-pdf"></i> Print / Save PDF</button></div>
+    </div>
+  </div>
+
+    <div class="modal consent-modal" id="termsConsentModal" role="dialog" aria-modal="true" aria-labelledby="termsConsentTitle">
+      <div class="modal-content consent-content">
+        <img class="consent-logo" src="logo.jpg" alt="VIT PYQ's community logo" />
+        <h2 id="termsConsentTitle">Community terms</h2>
+        <p>This is an independent, open-source student community and is not affiliated with, endorsed by, or operated by VIT. Use the platform respectfully. Share only material you have permission to share, do not post personal or confidential information, and report inaccurate or inappropriate content. Shared material is user-provided and should be checked before academic use.</p>
+        <div class="consent-links">
+          <!--<a href="terms.html" target="termsFrame">Open terms separately</a>-->
+          <a href="https://vit.ac.in/" target="_blank">VIT official website</a>
+        </div>
+        <!--<iframe name="termsFrame" title="Community terms" src="terms.html"></iframe>-->
+        <label class="consent-check"><input type="checkbox" id="termsAccepted" /> <span>I have read and agree to these community terms.</span></label>
+        <label class="consent-check"><input type="checkbox" id="independenceAccepted" /> <span>I understand this is an independent community, not an official VIT service.</span></label>
+        <button type="button" class="btn-primary full" onclick="acceptCommunityTerms()">Continue</button>
+      </div>
+    </div>
+
+    <div class="modal consent-modal" id="cookieConsentModal" role="dialog" aria-modal="true" aria-labelledby="cookieConsentTitle">
+      <div class="modal-content cookie-consent-content">
+        <h2 id="cookieConsentTitle">Allow site data?</h2>
+        <p>Essential browser storage keeps your session and preferences working. No advertising or analytics cookies are used by this app.</p>
+        <div class="consent-actions">
+          <button type="button" class="btn-primary" onclick="chooseSiteData(true)">Allow site data</button>
+          <button type="button" class="btn-outline" onclick="chooseSiteData(false)">Essential only</button>
+        </div>
+      </div>
+    </div>
+
+  
+  <!-- Desktop bottom control panel -->
+  <nav class="bottom-nav" id="bottomNav" aria-label="Primary">
+    <a href="#" onclick="showSection('home');return false;"><i class="fas fa-home"></i>Home</a>
+    <a href="#" onclick="showSection('papers');return false;"><i class="fas fa-photo-video"></i>Media</a>
+    <a href="#" onclick="showSection('upload');return false;"><i class="fas fa-cloud-upload-alt"></i>Upload</a>
+    <a href="#" onclick="showSection('store');return false;"><i class="fas fa-store"></i>Store</a>
+    <a href="#" onclick="showSection('leaderboard');return false;"><i class="fas fa-trophy"></i>Board</a>
+    <a href="#" onclick="showSection('chat');return false;"><i class="fas fa-comments"></i>Chat</a>
+    <a href="#" id="bottomProfileNav" onclick="showSection('profile');return false;" style="display:none;"><i class="fas fa-user"></i>Profile</a>
+  </nav>
+
+  <footer class="footer " style="z-index:100;">
+    <div class="footer-faq">
+      <h3 class="footer-faq-title"><i class="fas fa-question-circle"></i> FAQ</h3>
+      <div class="faq-pager">
+        <div class="faq-list footer-faq-list" id="faqList">
+          <details class="faq-item faq-page" data-page="0"><summary><i class="fas fa-crown"></i> How does the subscription plan work?</summary><p>Every logged-in user gets a <strong>1-year free subscription</strong>.<br> Upload <strong>30 papers</strong> to earn a <strong>+6 months</strong> extension.<br> Each additional 30 uploads extends your plan further. <br>Your plan and end date appear on your <strong>profile</strong>.</p></details>
+          <details class="faq-item faq-page" data-page="0"><summary><i class="fas fa-gift"></i> Rewards and bonuses</summary><p>New users receive <strong>30,000 ZX</strong>.<br> Earn <strong>1,000 ZX</strong> per paper upload.<br> Admin can grant bonus or cash prizes — credits show in your profile and legendary highlights. </p></details>
+          <details class="faq-item faq-page" data-page="0"><summary><i class="fas fa-lock"></i> Public / Private profiles</summary><p>Toggle Public or Private in your profile settings.<br>Private accounts show only a lock message and <strong>Send Friend Request</strong> to others.<br>Friends and Admin can see more.</p></details>
+          <details class="faq-item faq-page" data-page="1"><summary><i class="fas fa-comments"></i> How does Chat work?</summary><p>ZX Global Chat is open to all logged-in users.<br> Message friends privately from profile or friends list.<br> Be respectful and helpful.</p></details>
+          <details class="faq-item faq-page" data-page="1"><summary><i class="fas fa-star"></i> Legendary Highlights</summary><p>Admin congratulations can appear as public <strong>Legendary Highlights</strong>.<br> Admin can also remove a highlight later.</p></details>
+          <details class="faq-item faq-page" data-page="1"><summary><i class="fas fa-cloud-upload-alt"></i> How do I upload a paper?</summary><p>Go to Upload, fill subject, course code, slot, year, semester, campus and exam type. Preview the file, then submit.<br> You earn <strong>1,000zx</strong> per paper.</p></details>
+          <details class="faq-item faq-page" data-page="2"><summary><i class="fas fa-download"></i> How do I download papers?</summary><p>Log in to view or download papers and notes. Access is free.<br> Your download history is private — only you and Admin can see it.</p></details>
+          <details class="faq-item faq-page" data-page="2"><summary><i class="fas fa-coins"></i> What is ZX?</summary><p>ZX is the platform currency. New users get <strong>30,000zx</strong>.<br> Earn 1,000zx per upload. Spend ZX in the Store on badges, designs and effects.</p></details>
+          <details class="faq-item faq-page" data-page="2"><summary><i class="fas fa-store"></i> What can I buy in the Store?</summary><p>Badges, profile design items, effects and verification.<br> After purchase use <strong>Apply</strong> / <strong>Remove</strong>.<br> Items stay in your Vault.</p></details>
+          <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-user-friends"></i> Friends &amp; requests</summary><p>Open Friends on your profile, tap <strong>Add Friends</strong>, search users, send requests, accept from the heart icon.</p></details>
+          <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-shield-alt"></i> What can Admin do?</summary><p>Search users, congratulate, give bonus/cash prize, terminate accounts (with reason), remove papers (with message), and manage Legendary Highlights.</p></details>
+          <details class="faq-item faq-page" data-page="3"><summary><i class="fas fa-user-slash"></i> Account termination</summary><p>If Admin terminates your account, you will see their message and cannot log in again.<br> The status persists after refresh.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-medal"></i> How do badges work?</summary><p>Default is Bronze.<br> Buy higher badges in the Store. <br>The badge pin shows on your avatar across the site.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-vault"></i> What is the Vault?</summary><p>Vault stores items you purchased.<br> Open it from profile to apply or remove designs and custom titles.</p></details>
+          <details class="faq-item faq-page" data-page="4"><summary><i class="fas fa-eye-slash"></i> Download privacy</summary><p>Only the account owner and Admin can see download history.<br> Public profiles never expose downloads.</p></details>
+          <details class="faq-item faq-page" data-page="5"><summary><i class="fas fa-graduation-cap"></i> Why was this platform built?</summary><p>This independent open-source community shares media, university updates and question papers with students across five campuses.</p></details>
+ 
+          <!-- ===== NEW: Papers &amp; Notes ===== -->
+          <details class="faq-item faq-page" data-page="6"><summary><i class="fas fa-file-upload"></i> How do I upload study notes?</summary><p>Go to Upload and switch to the <strong>Notes</strong> tab.<br> Add the subject, year, semester and campus, choose a PDF or image, preview it, then submit.<br> Course code is optional for notes.</p></details>
+          <details class="faq-item faq-page" data-page="6"><summary><i class="fas fa-filter"></i> How do I find a paper quickly?</summary><p>Use the <strong>Exam</strong>, <strong>Semester</strong> and <strong>Year</strong> filters under Media, and pick your campus.<br> Bookmark papers you use often so you can reopen them from your profile.</p></details>
+          <details class="faq-item faq-page" data-page="6"><summary><i class="fas fa-bookmark"></i> What are Bookmarks and Liked?</summary><p>Bookmarks save a paper or note for later.<br> Liked shows what you've liked.<br> Both are on your profile.</p></details>
+          <details class="faq-item faq-page" data-page="7"><summary><i class="fas fa-star-half-alt"></i> How do I rate a paper?</summary><p>Open any paper and tap the stars under "Rate this paper".<br> Ratings help others see which papers are useful.</p></details>
+          <details class="faq-item faq-page" data-page="7"><summary><i class="fas fa-flag"></i> What if a paper is wrong, blurry or in the wrong category?</summary><p>Tell us in <strong>Student Feedback</strong> or <strong>Global Chat</strong> and an admin will fix or remove it.<br> Papers are user-provided, so always check them before relying on them.</p></details>
+          <details class="faq-item faq-page" data-page="7"><summary><i class="fas fa-question-circle"></i> Can I request a paper that isn't uploaded?</summary><p>Yes.<br> Ask in <strong>Global Chat</strong>.<br> If someone has it, they can upload it and earn ZX.</p></details>
+ 
+          <!-- ===== NEW: Student Tools ===== -->
+          <details class="faq-item faq-page" data-page="8"><summary><i class="fas fa-calculator"></i> How does the GPA predictor work?</summary><p>Open <strong>Student Tools</strong>, then GPA &amp; CGPA predictor.<br> Add each subject with its credits and your expected grade, then tap <strong>Calculate GPA</strong>.<br> Grades at VIT are relative, so treat the result as an estimate.</p></details>
+          <details class="faq-item faq-page" data-page="8"><summary><i class="fas fa-chart-line"></i> How do I calculate CGPA?</summary><p>Switch to the <strong>CGPA</strong> tab, add each semester's GPA and earned credits, and tap <strong>Calculate CGPA</strong>.</p></details>
+          <details class="faq-item faq-page" data-page="8"><summary><i class="fas fa-print"></i> Can I save or share my GPA results?</summary><p>Use <strong>Export / Print</strong> to save a copy or print it.</p></details>
+          <details class="faq-item faq-page" data-page="9"><summary><i class="fas fa-calendar-alt"></i> How does the timetable planner work?</summary><p>Choose <strong>Theory</strong> or <strong>Lab</strong>, pick a slot such as A1, B1 or C1, and add the course.<br> It fills your weekly grid automatically using VIT slot timings.</p></details>
+          <details class="faq-item faq-page" data-page="9"><summary><i class="fas fa-exclamation-triangle"></i> What happens if two courses clash?</summary><p>The planner rejects clashing slot combinations, so you'll see an error and can pick a different slot.</p></details>
+          <details class="faq-item faq-page" data-page="9"><summary><i class="fas fa-puzzle-piece"></i> Can I enter combined slots like A1+TA1?</summary><p>Yes, type a valid combination in the <strong>Combination</strong> field.<br> Invalid codes are rejected.</p></details>
+          <details class="faq-item faq-page" data-page="10"><summary><i class="fas fa-file-export"></i> How do I name or export my timetable?</summary><p>Give it a name at the top, then use <strong>Export / Print</strong> to get an Excel file or a PDF.</p></details>
+          <details class="faq-item faq-page" data-page="10"><summary><i class="fas fa-info-circle"></i> Is the timetable planner official?</summary><p>No.<br> It's an independent student tool, so always confirm your real slots on <strong>VTOP</strong>.</p></details>
+ 
+          <!-- ===== NEW: Accounts and login ===== -->
+          <details class="faq-item faq-page" data-page="10"><summary><i class="fas fa-user-graduate"></i> Who can log in with Google?</summary><p>VIT students use Google sign-in with their campus email.<br> Choose your campus first, since the domain depends on it.</p></details>
+          <details class="faq-item faq-page" data-page="11"><summary><i class="fas fa-envelope"></i> Can I use a personal email?</summary><p>Yes, register with a personal email and password.<br> Campus emails must continue with Google.</p></details>
+          <details class="faq-item faq-page" data-page="11"><summary><i class="fas fa-key"></i> I forgot my password. What do I do?</summary><p>Tap <strong>Forgot password</strong> and enter your registered personal email to get a reset link.<br> VIT student accounts that use Google sign-in have no separate password to reset.</p></details>
+          <details class="faq-item faq-page" data-page="11"><summary><i class="fas fa-user-edit"></i> How often can I change my username?</summary><p>Once every <strong>15 days</strong>, from Edit Profile.</p></details>
+          <details class="faq-item faq-page" data-page="12"><summary><i class="fas fa-id-card"></i> How do I change my name or photo?</summary><p>Open your profile, tap <strong>Edit Profile</strong>, update your display name or photo, and save.</p></details>
+ 
+          <!-- ===== NEW: Community, privacy and notifications ===== -->
+          <details class="faq-item faq-page" data-page="12"><summary><i class="fas fa-user-lock"></i> What do Public and Private profiles show?</summary><p>Public profiles show your uploads, ZX, badge and stats.<br> Private profiles show only a lock and a <strong>Send Friend Request</strong> button.<br> Your download history is never public.</p></details>
+          <details class="faq-item faq-page" data-page="12"><summary><i class="fas fa-bell"></i> How do I turn on notifications?</summary><p>Go to your profile and switch on <strong>Device push notifications</strong>.<br> Allow the browser prompt.<br> You'll get alerts even when the site is closed, and you can turn it off anytime.</p></details>
+          <details class="faq-item faq-page" data-page="13"><summary><i class="fas fa-bullhorn"></i> What are announcements?</summary><p>Admins post announcements for everyone or for a single campus.<br> They show up in notifications.</p></details>
+          <details class="faq-item faq-page" data-page="13"><summary><i class="fas fa-comment-dots"></i> How do I send feedback?</summary><p>Use <strong>Send Feedback</strong> under Student Feedback on the home page.<br> Admins read all of it.</p></details>
+          <details class="faq-item faq-page" data-page="13"><summary><i class="fas fa-cookie-bite"></i> Is my data safe?</summary><p>The app uses only essential browser storage for sessions and preferences, with no advertising or analytics cookies.</p></details>
+          <details class="faq-item faq-page" data-page="14"><summary><i class="fas fa-user-shield"></i> How do I report someone in chat?</summary><p>Message an admin or use <strong>Student Feedback</strong>.</p></details>
+        </div>
+        <div class="faq-controls">
+          <button type="button" class="faq-arrow" id="faqPrev" onclick="faqPage(-1)" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+          <div class="faq-dots" id="faqDots"></div>
+          <button type="button" class="faq-arrow" id="faqNext" onclick="faqPage(1)" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bar">
+<a href="#" class="footer-brand logo-lg" onclick="showSection('home'); return false;" style="display:inline-flex;align-items:center;gap:0.45rem;text-decoration:none;">
+  <img
+    src="logo.jpeg"
+    alt="VIT PYQ's"
+    class="footer-logo-img"
+    style="
+      height: 52px;
+      width: auto;
+      max-width: 220px;
+      object-fit: contain;
+      display: block;
+    "
+  />
+</a>
+      <p class="footer-copy"><i class="far fa-copyright"></i> All rights reserved. 2026 · For VITians</p>
+      <span class="footer-spacer"></span>
+    </div>
+  </footer>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase-push.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('touchstart', function(event) {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { passive: false });
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(type) {
+      document.addEventListener(type, function(event) { event.preventDefault(); }, { passive: false });
+    });
+    document.addEventListener('wheel', function(event) {
+      if (event.ctrlKey || event.metaKey) event.preventDefault();
+    }, { passive: false });
+    document.addEventListener('keydown', function(event) {
+      if ((event.ctrlKey || event.metaKey) && ['+', '=', '-', '0', 'Add', 'Subtract'].includes(event.key)) event.preventDefault();
+    });
+  </script>
+</body>
+</html>

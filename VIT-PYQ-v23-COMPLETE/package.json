@@ -1,0 +1,15 @@
+{
+  "name": "vit-pyq-2026",
+  "version": "20.0.0",
+  "description": "VIT PYQ's — previous year questions platform for VITians",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -l 5000 .",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  }
+}
