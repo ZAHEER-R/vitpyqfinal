@@ -121,11 +121,18 @@
     <section id="home" class="section active">
       <div class="hero">
         <div class="hero-content">
-          <div class="home-quote-ticker" id="homeQuoteTicker">
-            <i class="fas fa-quote-left"></i>
-            <div class="home-quote-body">
-              <p id="homeQuoteText">Loading inspiration...</p>
-              <span class="home-quote-author" id="homeQuoteAuthor"></span>
+          <div class="home-quote-wrap">
+            <button type="button" class="master-notes-badge" onclick="openMasterNotesPreview()" aria-label="Open Master Notes user manual">
+              <img src="vijay_sticker.png" alt="" />
+              <span class="master-notes-label">Master Says</span>
+              <span class="master-notes-label master-label2">Click Me for Manual</span>
+            </button>
+            <div class="home-quote-ticker" id="homeQuoteTicker">
+              <i class="fas fa-quote-left"></i>
+              <div class="home-quote-body">
+                <p id="homeQuoteText">Loading inspiration...</p>
+                <span class="home-quote-author" id="homeQuoteAuthor"></span>
+              </div>
             </div>
           </div>
           <h1>Download <span class="gradient">VIT PYQ Papers</span> &amp; Notes</h1>
@@ -321,7 +328,7 @@
           </div>
           <aside class="upload-guidelines" role="note" aria-label="Upload rules">
             <strong><i class="fas fa-shield-alt"></i> Upload rules</strong>
-            <p>VITPYQ is an independent student community created by VITians; it is not an official VIT website and is not affiliated with VIT. Upload only accurate, authentic VIT question papers or notes that you have permission to share. False or misleading material, personal or sensitive information, and inappropriate or unauthorized content are prohibited. Reported content may be reviewed and removed by admins; serious or repeated violations may lead to account suspension or termination.</p>
+            <br><p>VITPYQ is an independent, student-run community created by VITians.<br><br>It is not an official VIT website and is not affiliated with VIT.<br><br> Upload only genuine, accurate VIT question papers or study notes that you are authorized to share.<br><br>False or misleading material, personal or sensitive information, inappropriate content, and anything you do not have permission to share are prohibited. <br><br>Reported papers or notes may be reviewed and removed by admins.<br><br> Violations may result in content removal and, depending on severity or repetition, account suspension or termination.</p>
           </aside>
           <div id="uploadPaperPanel">
           <h2><i class="fas fa-cloud-upload-alt"></i> Upload Question Paper</h2>
@@ -721,6 +728,7 @@
         <h2 class="section-title"><i class="fas fa-shield-alt"></i> Admin Panel</h2>
         <div class="tabs" style="margin-bottom:1rem;">
           <button class="tab active" id="adminTabPapers" onclick="switchAdminTab('papers')">Papers</button>
+          <button class="tab" id="adminTabNotes" onclick="switchAdminTab('notes')">Notes</button>
           <button class="tab" id="adminTabUsers" onclick="switchAdminTab('users')">Users</button>
           <button class="tab" id="adminTabFeedback" onclick="switchAdminTab('feedback')">Student Feedback</button>
           <button class="tab" id="adminTabAnnouncements" onclick="switchAdminTab('announcements')">Announcements</button>
@@ -731,6 +739,13 @@
             <input type="text" id="adminPaperSearch" placeholder="Search papers by subject, code, campus..." oninput="renderAdmin()" />
           </div>
           <div id="adminPapers" class="admin-list"></div>
+        </div>
+        <div id="adminNotesPanel" style="display:none;">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="adminNoteSearch" placeholder="Search notes by subject, code, campus..." oninput="renderAdminNotes()" />
+          </div>
+          <div id="adminNotes" class="admin-list"></div>
         </div>
         <div id="adminUsersPanel" style="display:none;">
           <div class="admin-campus-filters" role="group" aria-label="Filter students by campus">
@@ -1193,6 +1208,38 @@
     </div>
   </footer>
   <div class="toast" id="toast"></div>
+  <div class="modal resource-reports-overlay" id="resourceReportsModal" role="dialog" aria-modal="true" aria-labelledby="resourceReportsTitle" onclick="if(event.target===this)closeResourceReports()">
+    <div class="modal-content resource-reports-dialog">
+      <button type="button" class="modal-close" onclick="closeResourceReports()" aria-label="Close reports"><i class="fas fa-times"></i></button>
+      <h2 id="resourceReportsTitle">Reports</h2>
+      <div id="resourceReportsList" class="resource-reports-list"></div>
+    </div>
+  </div>
+  <audio id="masterNotesBgm" src="master_bgm.mp3" preload="auto"></audio>
+  <div class="modal master-notes-overlay" id="masterNotesModal" role="dialog" aria-modal="true" aria-labelledby="masterNotesTitle" onclick="if(event.target===this)closeMasterNotesPreview()">
+    <div class="modal-content master-notes-dialog">
+      <button type="button" class="modal-close" onclick="closeMasterNotesPreview()" aria-label="Close user manual"><i class="fas fa-times"></i></button>
+      <div class="master-notes-header">
+        <h2 id="masterNotesTitle">User Manual</h2>
+        <a class="btn-primary master-notes-download" href="Master_Notes2.pdf" download="Master_Notes2.pdf"><i class="fas fa-download"></i> Download PDF</a>
+      </div>
+      <div class="master-notes-viewer">
+        <div class="pdf-viewer-tools master-notes-tools" aria-label="PDF controls">
+          <button type="button" class="btn-ghost sm" onclick="changeMasterNotesPage(-1)" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>
+          <span class="pdf-page-indicator"><span id="masterNotesCurrentPage">1</span> / <span id="masterNotesPageCount">1</span></span>
+          <button type="button" class="btn-ghost sm" onclick="changeMasterNotesPage(1)" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>
+          <span class="pdf-tool-spacer"></span>
+          <button type="button" class="btn-ghost sm" onclick="changeMasterNotesZoom(-0.15)" aria-label="Zoom out"><i class="fas fa-minus"></i></button>
+          <button type="button" class="btn-ghost sm" onclick="fitMasterNotesPage()" aria-label="Fit page">Fit</button>
+          <button type="button" class="btn-ghost sm" onclick="changeMasterNotesZoom(0.15)" aria-label="Zoom in"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="pdf-render-stage master-notes-stage" id="masterNotesRenderStage">
+          <p class="pdf-preview-error" id="masterNotesLoading">Loading PDF preview...</p>
+          <canvas id="masterNotesCanvas" aria-label="Master Notes PDF page"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>

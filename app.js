@@ -1088,11 +1088,16 @@ async function openInlinePdf(raw, paperId) {
   const tools = document.getElementById('pdfViewerTools');
   const stage = document.getElementById('pdfRenderStage');
   const canvas = document.getElementById('pdfPageCanvas');
-  if (frame) { frame.src = 'about:blank'; frame.style.display = 'none'; }
-  wrap?.classList.add('pdf-inline-active');
+  if (frame) {
+    frame.style.display = 'block';
+    frame.style.width = '100%';
+    frame.style.height = '100%';
+    frame.src = raw;
+  }
+  wrap?.classList.remove('pdf-inline-active');
   document.getElementById('viewObject').style.display = 'none';
-  if (tools) tools.style.display = 'flex';
-  if (stage) { stage.style.display = 'block'; stage.innerHTML = ''; }
+  if (tools) tools.style.display = 'none';
+  if (stage) { stage.style.display = 'none'; stage.innerHTML = ''; }
   if (canvas && stage) stage.appendChild(canvas);
   bindInlinePdfControls();
   if (!window.pdfjsLib) {
@@ -1101,19 +1106,53 @@ async function openInlinePdf(raw, paperId) {
   }
   window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
   try {
-    const response = await fetch(raw, { mode: 'cors', credentials: 'omit' });
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    const data = new Uint8Array(await response.arrayBuffer());
-    const documentTask = window.pdfjsLib.getDocument({ data });
-    const pdf = await documentTask.promise;
+    let pdf;
+    if (/^https?:\/\//i.test(raw)) {
+      let documentTask = window.pdfjsLib.getDocument({
+        url: raw,
+        withCredentials: false,
+        rangeChunkSize: 65536,
+        disableAutoFetch: true,
+        disableStream: true
+      });
+      state._inlinePdfLoadingTask = documentTask;
+      try {
+        pdf = await documentTask.promise;
+      } catch (rangeError) {
+        if (state._viewingPaperId !== paperId) return;
+        const response = await fetch(raw, { mode: 'cors', credentials: 'omit' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = new Uint8Array(await response.arrayBuffer());
+        documentTask = window.pdfjsLib.getDocument({ data });
+        state._inlinePdfLoadingTask = documentTask;
+        pdf = await documentTask.promise;
+      }
+    } else {
+      const response = await fetch(raw, { mode: 'cors', credentials: 'omit' });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const data = new Uint8Array(await response.arrayBuffer());
+      const documentTask = window.pdfjsLib.getDocument({ data });
+      state._inlinePdfLoadingTask = documentTask;
+      pdf = await documentTask.promise;
+    }
     if (state._viewingPaperId !== paperId) { await pdf.destroy(); return; }
+    state._inlinePdfLoadingTask = null;
     state._inlinePdf = pdf;
     state._inlinePdfPage = 1;
     state._inlinePdfZoom = 1;
     await renderInlinePdfPage(paperId);
+    if (state._viewingPaperId === paperId) {
+      if (stage) stage.style.display = 'block';
+      if (tools) tools.style.display = 'flex';
+      wrap?.classList.add('pdf-inline-active');
+      if (frame) frame.style.display = 'none';
+    }
   } catch (error) {
     console.warn('[VIT PYQ] Inline PDF preview failed', error);
-    if (state._viewingPaperId === paperId && stage) stage.innerHTML = '<p class="pdf-preview-error">This PDF could not be previewed here. Use Download to save it.</p>';
+    if (state._viewingPaperId === paperId && stage) {
+      stage.style.display = 'block';
+      stage.innerHTML = '<p class="pdf-preview-error">The detailed preview could not be loaded. You can still view or download the PDF above.</p>';
+    }
   }
 }
 
@@ -1484,7 +1523,7 @@ function buyBadge(badge, cost) {
   toast('Badge added to Vault! Open Vault to equip.', 'success');
 }
 
-function equipBadge(badge) {
+async function equipBadge(badge) {
   if (!state.user) return;
   const badgeItemId = 'badge_' + badge;
   if (badge !== 'bronze' && !(state.user.items || []).includes(badgeItemId)) {
@@ -1495,6 +1534,10 @@ function equipBadge(badge) {
   if (u) u.badge = badge;
   save(); updateUI();
   if (typeof openVault === 'function') openVault();
+  if (window.SupabaseSync?.ready && !await window.SupabaseSync.pending) {
+    toast('Badge changed locally, but cloud sync failed', 'error');
+    return;
+  }
   toast('Badge equipped: ' + badge, 'success');
 }
 function buyItem(itemId, cost) {
@@ -1690,36 +1733,110 @@ function deleteChatMsg(id) {
 
 /* Admin */
 function renderAdmin() {
+  renderAdminResources('paper');
+}
+
+function renderAdminNotes() {
+  renderAdminResources('note');
+}
+
+function renderAdminResources(resourceType) {
   if (!state.user || !state.user.isAdmin) return;
-  const list = document.getElementById('adminPapers');
-  const q = (document.getElementById('adminPaperSearch')?.value || '').toLowerCase().trim();
-  let papers = state.papers;
+  const isNote = resourceType === 'note';
+  const list = document.getElementById(isNote ? 'adminNotes' : 'adminPapers');
+  const searchId = isNote ? 'adminNoteSearch' : 'adminPaperSearch';
+  const q = (document.getElementById(searchId)?.value || '').toLowerCase().trim();
+  const resources = isNote ? (state.notes || []) : state.papers;
+  const reports = JSON.parse(localStorage.getItem('vitpyq_reports') || '[]');
+  let items = resources;
   if (q) {
-    papers = papers.filter(p =>
-      (p.subject + ' ' + p.code + ' ' + (p.campus||'') + ' ' + p.category).toLowerCase().includes(q)
+    items = items.filter(resource =>
+      `${resource.subject || ''} ${resource.code || ''} ${resource.campus || ''} ${resource.category || ''} ${resource.year || ''}`.toLowerCase().includes(q)
     );
   }
-  if (!papers.length) {
-    list.innerHTML = '<p class="center muted">No papers found.</p>';
+  if (!items.length) {
+    list.innerHTML = `<p class="center muted">No ${isNote ? 'notes' : 'papers'} found.</p>`;
     return;
   }
-  list.innerHTML = papers.map(p => {
-    const up = state.users.find(u => u.id === p.uploaderId);
-    const isPdf = (p.fileName||'').toLowerCase().endsWith('.pdf') || (p.fileData||'').startsWith('data:application/pdf');
-    const thumb = p.fileData
-      ? (isPdf ? `<iframe src="${p.fileData.split('#')[0]}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" scrolling="no"></iframe>` : `<img src="${p.fileData}" alt="" />`)
+  list.innerHTML = items.map(resource => {
+    const uploader = state.users.find(user => user.id === resource.uploaderId);
+    const isPdf = (resource.fileName || '').toLowerCase().endsWith('.pdf') || (resource.fileData || '').startsWith('data:application/pdf');
+    const thumb = resource.fileData
+      ? (isPdf ? `<iframe src="${resource.fileData.split('#')[0]}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" scrolling="no" title="${isNote ? 'Notes' : 'Paper'} preview"></iframe>` : `<img src="${resource.fileData}" alt="" />`)
+      : '';
+    const reportCount = reports.filter(report =>
+      String(report.paperId || report.resourceId || '') === String(resource.id)
+      && (report.resourceType || 'paper') === resourceType
+    ).length;
+    const reportFlag = reportCount
+      ? `<button type="button" class="admin-report-flag" title="View ${reportCount} report${reportCount === 1 ? '' : 's'}" aria-label="View ${reportCount} reports" onclick="event.stopPropagation(); openResourceReports('${escapeHtml(resource.id)}','${resourceType}')"><i class="fas fa-flag"></i><span>${reportCount}</span></button>`
       : '';
     return `<div class="admin-row">
       <div class="admin-thumb">${thumb}</div>
       <div class="info">
-        <strong>${escapeHtml(p.subject)} (${escapeHtml(p.code)})</strong>
-        <span>${p.year} · ${semLabel(p.semester)} · ${p.category} · ${p.campus||'Vellore'} · by @${up ? escapeHtml(up.username) : '?'}</span>
+        <strong>${escapeHtml(resource.subject || (isNote ? 'Untitled notes' : 'Untitled paper'))} (${escapeHtml(resource.code || 'No course code')}) ${reportFlag}</strong>
+        <span>${resource.year || ''} · ${semLabel(resource.semester)} · ${isNote ? 'Notes' : escapeHtml(resource.category || '')} · ${escapeHtml(resource.campus || 'Vellore')} · by @${uploader ? escapeHtml(uploader.username) : '?'}</span>
       </div>
-      <button class="btn-ghost" style="color:var(--red);border-color:var(--red);" onclick="deletePaper('${p.id}')">
+      <button class="btn-ghost" style="color:var(--red);border-color:var(--red);" onclick="${isNote ? 'deleteNote' : 'deletePaper'}('${resource.id}')">
         <i class="fas fa-trash"></i> Remove
       </button>
     </div>`;
   }).join('');
+}
+
+function openResourceReports(resourceId, resourceType) {
+  if (!state.user?.isAdmin) return;
+  const resource = (resourceType === 'note' ? state.notes : state.papers)?.find(item => String(item.id) === String(resourceId));
+  const reports = JSON.parse(localStorage.getItem('vitpyq_reports') || '[]').filter(report =>
+    String(report.paperId || report.resourceId || '') === String(resourceId)
+    && (report.resourceType || 'paper') === resourceType
+  ).sort((first, second) => (second.ts || 0) - (first.ts || 0));
+  const title = document.getElementById('resourceReportsTitle');
+  const list = document.getElementById('resourceReportsList');
+  if (!list) return;
+  if (title) title.textContent = `${resource?.subject || (resourceType === 'note' ? 'Notes' : 'Paper')} · Reports`;
+  list.innerHTML = reports.map(report => {
+    const user = state.users.find(item => item.id === report.fromId);
+    const displayName = user?.displayName || report.fromName || user?.username || 'Unknown user';
+    const username = user?.username || report.fromName || 'unknown';
+    const date = report.ts ? new Date(report.ts).toLocaleString() : '';
+    return `<article class="resource-report-item">
+      <strong>${escapeHtml(displayName)} <span>@${escapeHtml(username)}</span></strong>
+      <p>${escapeHtml(report.reason || 'No complaint details provided.')}</p>
+      <time>${escapeHtml(date)}</time>
+    </article>`;
+  }).join('') || '<p class="muted">No report details are available.</p>';
+  document.getElementById('resourceReportsModal')?.classList.add('show');
+  document.body.classList.add('modal-open');
+}
+
+function closeResourceReports() {
+  document.getElementById('resourceReportsModal')?.classList.remove('show');
+  if (!document.querySelector('.modal.show')) document.body.classList.remove('modal-open');
+}
+
+async function openUploadedResourceFromNotif(resourceId) {
+  if (!state.user || !resourceId) return;
+  closeNotifPanel();
+  let resource = [...state.papers, ...(state.notes || [])].find(item => String(item.id) === String(resourceId));
+  if (!resource && window.SupabaseSync) {
+    try {
+      await window.SupabaseSync.pull();
+      resource = [...state.papers, ...(state.notes || [])].find(item => String(item.id) === String(resourceId));
+    } catch (error) {
+      console.warn('[VIT PYQ] Could not load upload from notification', error);
+    }
+  }
+  if (!resource) { toast('This upload is no longer available', 'error'); return; }
+  viewPaper(resource.id);
+}
+
+function deleteNote(id) {
+  if (!state.user || !state.user.isAdmin) return;
+  if (!confirm('Remove this note permanently?')) return;
+  state.notes = (state.notes || []).filter(note => note.id !== id);
+  save(); updateUI(); renderAdminNotes(); renderHomeNotes(); renderNotesMedia();
+  toast('Note removed', 'success');
 }
 function deletePaper(id) {
   if (!state.user || !state.user.isAdmin) return;
@@ -2487,17 +2604,20 @@ let termTargetId = null;
 
 function switchAdminTab(tab) {
   document.getElementById('adminTabPapers').classList.toggle('active', tab === 'papers');
+  document.getElementById('adminTabNotes')?.classList.toggle('active', tab === 'notes');
   document.getElementById('adminTabUsers').classList.toggle('active', tab === 'users');
   const tf = document.getElementById('adminTabFeedback');
   if (tf) tf.classList.toggle('active', tab === 'feedback');
   document.getElementById('adminTabAnnouncements')?.classList.toggle('active', tab === 'announcements');
   document.getElementById('adminPapersPanel').style.display = tab === 'papers' ? 'block' : 'none';
+  document.getElementById('adminNotesPanel').style.display = tab === 'notes' ? 'block' : 'none';
   document.getElementById('adminUsersPanel').style.display = tab === 'users' ? 'block' : 'none';
   const fp = document.getElementById('adminFeedbackPanel');
   if (fp) fp.style.display = tab === 'feedback' ? 'block' : 'none';
   const announcements = document.getElementById('adminAnnouncementsPanel');
   if (announcements) announcements.style.display = tab === 'announcements' ? 'block' : 'none';
   if (tab === 'papers') renderAdmin();
+  else if (tab === 'notes') renderAdminNotes();
   else if (tab === 'users') renderAdminUsers();
   else if (tab === 'feedback') renderAdminFeedback();
   else if (tab === 'announcements') renderAdminAnnouncements();
@@ -2787,7 +2907,7 @@ searchFriends = function(q) {
 
 
 /* setItemActive — apply/remove without rebuy */
-function setItemActive(itemId, on) {
+async function setItemActive(itemId, on) {
   if (!state.user) return;
   if (!state.user.items || !state.user.items.includes(itemId)) {
     toast('You do not own this item', 'error'); return;
@@ -2799,8 +2919,13 @@ function setItemActive(itemId, on) {
   const u = state.users.find(x => x.id === state.user.id);
   if (u) u.activeItems = [...state.user.activeItems];
   save();
+  updateUI();
   renderProfile();
   refreshStoreButtons();
+  if (window.SupabaseSync?.ready && !await window.SupabaseSync.pending) {
+    toast('Design changed locally, but cloud sync failed', 'error');
+    return;
+  }
   toast(on ? 'Applied' : 'Removed', 'success');
 }
 
@@ -6331,10 +6456,117 @@ function closeToolExportPreview() {
 }
 
 document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape' && document.getElementById('resourceReportsModal')?.classList.contains('show')) {
+    closeResourceReports();
+  }
+  if (event.key === 'Escape' && document.getElementById('masterNotesModal')?.classList.contains('show')) {
+    closeMasterNotesPreview();
+  }
   if (event.key === 'Escape' && document.getElementById('toolExportModal')?.classList.contains('show')) {
     closeToolExportPreview();
   }
 });
+
+function openMasterNotesPreview() {
+  const modal = document.getElementById('masterNotesModal');
+  if (modal?.classList.contains('show')) return;
+  modal?.classList.add('show');
+  document.body.classList.add('modal-open');
+  const bgm = document.getElementById('masterNotesBgm');
+  if (bgm && bgm.paused) {
+    bgm.currentTime = 0;
+    bgm.play().catch(error => console.warn('[VIT PYQ] Master BGM playback was blocked', error));
+  }
+  if (state._masterNotesPdf) {
+    state._masterNotesPage = 1;
+    state._masterNotesZoom = 1;
+    renderMasterNotesPage();
+    return;
+  }
+  const status = document.getElementById('masterNotesLoading');
+  if (!window.pdfjsLib) {
+    if (status) status.textContent = 'PDF preview is unavailable. Use Download PDF to open the manual.';
+    return;
+  }
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  fetch('Master_Notes2.pdf')
+    .then(response => {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.arrayBuffer();
+    })
+    .then(data => window.pdfjsLib.getDocument({ data: new Uint8Array(data) }).promise)
+    .then(pdf => {
+      state._masterNotesPdf = pdf;
+      state._masterNotesPage = 1;
+      state._masterNotesZoom = 1;
+      if (status) status.remove();
+      document.getElementById('masterNotesPageCount').textContent = String(pdf.numPages);
+      renderMasterNotesPage();
+    })
+    .catch(error => {
+      console.warn('[VIT PYQ] Master Notes PDF preview failed', error);
+      if (status) status.textContent = 'PDF preview could not be loaded. Use Download PDF to open the manual.';
+    });
+}
+
+function closeMasterNotesPreview() {
+  document.getElementById('masterNotesModal')?.classList.remove('show');
+  const bgm = document.getElementById('masterNotesBgm');
+  if (bgm) {
+    bgm.pause();
+    bgm.currentTime = 0;
+  }
+  if (!document.querySelector('.modal.show')) document.body.classList.remove('modal-open');
+}
+
+async function renderMasterNotesPage() {
+  const pdf = state._masterNotesPdf;
+  const canvas = document.getElementById('masterNotesCanvas');
+  const stage = document.getElementById('masterNotesRenderStage');
+  if (!pdf || !canvas || !stage) return;
+  const pageNumber = Math.max(1, Math.min(state._masterNotesPage || 1, pdf.numPages));
+  state._masterNotesPage = pageNumber;
+  const page = await pdf.getPage(pageNumber);
+  const baseViewport = page.getViewport({ scale: 1 });
+  const fitScale = Math.max(0.5, (stage.clientWidth - 20) / baseViewport.width);
+  const viewport = page.getViewport({ scale: fitScale * (state._masterNotesZoom || 1) });
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  const context = canvas.getContext('2d');
+  if (state._masterNotesRenderTask) state._masterNotesRenderTask.cancel();
+  canvas.width = Math.floor(viewport.width * pixelRatio);
+  canvas.height = Math.floor(viewport.height * pixelRatio);
+  canvas.style.width = Math.floor(viewport.width) + 'px';
+  canvas.style.height = Math.floor(viewport.height) + 'px';
+  state._masterNotesRenderTask = page.render({
+    canvasContext: context,
+    viewport,
+    transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0]
+  });
+  try { await state._masterNotesRenderTask.promise; } catch (error) {
+    if (error.name !== 'RenderingCancelledException') throw error;
+  }
+  document.getElementById('masterNotesCurrentPage').textContent = String(pageNumber);
+  stage.scrollTop = 0;
+  stage.scrollLeft = 0;
+}
+
+function changeMasterNotesPage(delta) {
+  if (!state._masterNotesPdf) return;
+  state._masterNotesPage = Math.max(1, Math.min(state._masterNotesPdf.numPages, (state._masterNotesPage || 1) + delta));
+  renderMasterNotesPage();
+}
+
+function changeMasterNotesZoom(delta) {
+  if (!state._masterNotesPdf) return;
+  state._masterNotesZoom = Math.max(0.65, Math.min(2.5, (state._masterNotesZoom || 1) + delta));
+  renderMasterNotesPage();
+}
+
+function fitMasterNotesPage() {
+  if (!state._masterNotesPdf) return;
+  state._masterNotesZoom = 1;
+  renderMasterNotesPage();
+}
 
 function printToolPreview() {
   const frame = document.getElementById('toolExportFrame');
@@ -6886,6 +7118,18 @@ renderNotifs = function() {
   (state.user.systemNotifs || []).slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).forEach(item => {
     if ((item.text || '').toLowerCase().includes('signed in')) return;
     const actor = item.actorId || item.data?.actorId || (item.fromAdmin ? state.users.find(user => user.isAdmin)?.id : null);
+    const resourceId = item.type === 'upload' ? item.data?.resourceId : null;
+    if (resourceId) {
+      const uploader = state.users.find(user => user.id === actor);
+      const uploaderName = uploader?.displayName || uploader?.username || 'A student';
+      html += `<button type="button" class="notif-item upload-notif${item.read ? '' : ' unread'}" onclick="openUploadedResourceFromNotif('${escapeHtml(resourceId)}')">
+        <div class="notif-type">New upload</div>
+        <strong>${escapeHtml(uploaderName)}${uploader?.username ? ` (@${escapeHtml(uploader.username)})` : ''}</strong>
+        <div>${escapeHtml(item.text || '')}</div>
+        <div class="notif-date">${formatNotifDate(item.ts).full}</div>
+      </button>`;
+      return;
+    }
     const click = actor && actor !== state.user.id ? ` onclick="openChatFromNotif('${actor}')"` : '';
     const title = item.type === 'reward' || item.type === 'bonus' ? 'Reward' : item.type === 'chat' ? 'Message' : item.type === 'friend' ? 'Friend request' : item.fromAdmin ? 'Admin' : 'Notification';
     html += `<div class="notif-item${item.read ? '' : ' unread'}"${click}><div class="notif-type">${title}</div><div>${escapeHtml(item.text || '')}</div><div class="notif-date">${formatNotifDate(item.ts).full}</div></div>`;
@@ -6963,8 +7207,11 @@ updateNotifDot = function() {
 clearClearableNotifs = async function() {
   if (!state.user || !confirm('Clear all notifications?')) return;
   const userId = state.user.id;
+  const clearedAt = Date.now();
   const isLoginHistory = item => /signed in/i.test(item.text || '');
   const user = state.users.find(item => item.id === state.user.id);
+  state.user.notificationsClearedAt = clearedAt;
+  if (user) user.notificationsClearedAt = clearedAt;
   if (user) user.systemNotifs = (user.systemNotifs || []).filter(isLoginHistory);
   state.user.systemNotifs = (state.user.systemNotifs || []).filter(isLoginHistory);
   Object.values(state.privateChats || {}).forEach(messages => messages.forEach(message => {
@@ -6973,10 +7220,13 @@ clearClearableNotifs = async function() {
   save();
   if (window.sb && state.user) {
     try {
-      const clearedAt = new Date().toISOString();
+      if (window.SupabaseSync?.ready && !await window.SupabaseSync.pending) {
+        throw new Error('Notification state could not be saved before clearing');
+      }
+      const clearedAtIso = new Date(clearedAt).toISOString();
       const [{ error: notificationError }, { error: messageError }] = await Promise.all([
         window.sb.rpc('clear_my_notifications'),
-        window.sb.from('private_messages').update({ read_at: clearedAt }).eq('recipient_id', userId).is('read_at', null)
+        window.sb.from('private_messages').update({ read_at: clearedAtIso }).eq('recipient_id', userId).is('read_at', null)
       ]);
       if (notificationError) throw notificationError;
       if (messageError) throw messageError;
@@ -7206,6 +7456,11 @@ function viewPaper(id) {
   if (obj) { obj.style.display = 'none'; obj.removeAttribute('data'); }
   if (img) { img.style.display = 'none'; img.removeAttribute('src'); }
   if (state._inlinePdfRenderTask) { try { state._inlinePdfRenderTask.cancel(); } catch (e) {} }
+  if (state._inlinePdfLoadingTask) {
+    const loadingTask = state._inlinePdfLoadingTask;
+    state._inlinePdfLoadingTask = null;
+    loadingTask.destroy().catch(function() {});
+  }
   if (state._inlinePdf) { state._inlinePdf.destroy().catch(function() {}); state._inlinePdf = null; }
   document.getElementById('pdfViewerTools').style.display = 'none';
   document.getElementById('pdfRenderStage').style.display = 'none';
@@ -7243,6 +7498,11 @@ window.closeViewModal = function() {
   if (frame) { frame.src = 'about:blank'; frame.style.display = 'none'; }
   if (obj) { obj.removeAttribute('data'); obj.style.display = 'none'; }
   if (state._inlinePdfRenderTask) { try { state._inlinePdfRenderTask.cancel(); } catch (e) {} }
+  if (state._inlinePdfLoadingTask) {
+    const loadingTask = state._inlinePdfLoadingTask;
+    state._inlinePdfLoadingTask = null;
+    loadingTask.destroy().catch(function() {});
+  }
   if (state._inlinePdf) { state._inlinePdf.destroy().catch(function() {}); state._inlinePdf = null; }
   document.getElementById('pdfViewerTools').style.display = 'none';
   document.getElementById('pdfRenderStage').style.display = 'none';

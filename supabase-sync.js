@@ -6,6 +6,11 @@ window.SupabaseSync = {
   privateRefreshTimer: null,
   privateMessageChannel: null,
   privateMessageUserId: null,
+  accountRealtimeChannel: null,
+  accountRealtimeUserId: null,
+  accountRefreshTimer: null,
+  accountRefreshBusy: false,
+  accountRefreshPending: false,
   refreshBusy: false,
   isRecoveryRedirect() {
     const query = new URLSearchParams(window.location.search);
@@ -274,8 +279,10 @@ window.SupabaseSync = {
         pinned: row.kind === 'admin' || row.kind === 'reward' || row.kind === 'bonus' || row.kind === 'congrats'
       }));
       const byId = new Map([...storedNotifications, ...cloudNotifications].map(notification => [notification.id, notification]));
+      const notificationsClearedAt = Number(state.user.notificationsClearedAt) || 0;
       const seenEvents = new Set();
       state.user.systemNotifs = Array.from(byId.values()).sort((a, b) => (b.ts || 0) - (a.ts || 0)).filter(notification => {
+        if (!/signed in/i.test(notification.text || '') && (Number(notification.ts) || 0) <= notificationsClearedAt) return false;
         const actorId = notification.actorId || notification.data?.actorId || notification.data?.friendId || '';
         let eventKey = notification.id;
         if (notification.type === 'friend' && /accepted your friend request/i.test(notification.text || '')) {
@@ -555,8 +562,74 @@ window.SupabaseSync = {
       console.warn('[VIT PYQ] Private message refresh failed', error);
     }
   },
+  queueAccountRefresh() {
+    if (this.accountRefreshTimer) clearTimeout(this.accountRefreshTimer);
+    this.accountRefreshTimer = setTimeout(async () => {
+      this.accountRefreshTimer = null;
+      if (!window.sb || !state.user) return;
+      if (this.accountRefreshBusy || this.refreshBusy) {
+        this.accountRefreshPending = true;
+        return;
+      }
+      this.accountRefreshBusy = true;
+      try {
+        await this.pull();
+        updateUI();
+        renderNotifs();
+        updateNotifDot();
+        if (document.getElementById('home')?.classList.contains('active')) renderHomePapers();
+        if (document.getElementById('papers')?.classList.contains('active')) renderPapers();
+        if (document.getElementById('leaderboard')?.classList.contains('active')) renderLeaderboard();
+        if (document.getElementById('chat')?.classList.contains('active')) renderChat();
+        if (document.getElementById('profile')?.classList.contains('active')) renderProfile();
+        if (document.getElementById('admin')?.classList.contains('active') && state.user?.isAdmin) {
+          if (document.getElementById('adminNotesPanel')?.style.display !== 'none') renderAdminNotes();
+          else renderAdmin();
+        }
+        if (document.getElementById('personalChatPanel')?.style.display === 'block') {
+          renderPcFriends();
+          renderPcMessages();
+        }
+        if (document.getElementById('vaultModal')?.classList.contains('show')) openVault();
+      } catch (error) {
+        console.warn('[VIT PYQ] Realtime account refresh failed', error);
+      } finally {
+        this.accountRefreshBusy = false;
+        if (this.accountRefreshPending) {
+          this.accountRefreshPending = false;
+          this.queueAccountRefresh();
+        }
+      }
+    }, 100);
+  },
+  async startAccountRealtime() {
+    if (!window.sb || !state.user) return;
+    const userId = state.user.id;
+    if (this.accountRealtimeChannel && this.accountRealtimeUserId === userId) return;
+    if (this.accountRealtimeChannel) {
+      await window.sb.removeChannel(this.accountRealtimeChannel);
+      this.accountRealtimeChannel = null;
+    }
+    this.accountRealtimeChannel = window.sb.channel(`vitpyq-account-${userId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests' }, payload => {
+        if (payload.new?.to_id === userId || payload.old?.to_id === userId) this.queueAccountRefresh();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_notifications' }, payload => {
+        if (payload.new?.user_id === userId || payload.old?.user_id === userId) this.queueAccountRefresh();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, () => this.queueAccountRefresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_state', filter: `user_id=eq.${userId}` }, () => this.queueAccountRefresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => {
+        if (state.user?.isAdmin) this.queueAccountRefresh();
+      })
+      .subscribe(status => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') console.warn('[VIT PYQ] Account realtime unavailable; using refresh fallback.');
+      });
+    this.accountRealtimeUserId = userId;
+  },
   async startPrivateMessageRealtime() {
     if (!window.sb || !state.user) return;
+    this.startAccountRealtime();
     const userId = state.user.id;
     if (this.privateMessageChannel && this.privateMessageUserId === userId) return;
     if (this.privateMessageChannel) {
@@ -593,12 +666,14 @@ window.SupabaseSync = {
     if (this.refreshTimer) { this.startPrivateMessageRealtime(); return; }
     const signature = function () {
       return JSON.stringify({
-        users: state.users.map(user => [user.id, user.displayName, user.uploads, user.downloads, user.vcash, user.friends && user.friends.length, user.requests && user.requests.length]),
+        users: state.users.map(user => [user.id, user.displayName, user.badge, user.verified, user.activeItems, user.uploads, user.downloads, user.vcash, user.friends && user.friends.length, user.requests && user.requests.length]),
         announcements: (state.announcements || []).map(item => item.id),
         highlights: JSON.parse(localStorage.getItem('vitpyq_highlights') || '[]').map(item => item.id),
         papers: state.papers.map(paper => paper.id),
         notes: (state.notes || []).map(note => note.id),
         notifications: state.user && (state.user.systemNotifs || []).map(notification => [notification.id, !!notification.read]),
+        notificationsClearedAt: state.user && state.user.notificationsClearedAt,
+        reports: JSON.parse(localStorage.getItem('vitpyq_reports') || '[]').map(report => [report.id, report.paperId || report.resourceId, report.resourceType]),
         messages: state.messages.map(message => message.id),
         privateChats: Object.entries(state.privateChats || {}).map(([key, messages]) => [key, messages.map(message => [message.id || message.ts, !!message.read])])
       });
@@ -617,6 +692,10 @@ window.SupabaseSync = {
           if (document.getElementById('home')?.classList.contains('active')) renderHomePapers();
           if (document.getElementById('papers')?.classList.contains('active')) renderPapers();
           if (document.getElementById('leaderboard')?.classList.contains('active')) renderLeaderboard();
+          if (document.getElementById('admin')?.classList.contains('active') && state.user?.isAdmin) {
+            if (document.getElementById('adminNotesPanel')?.style.display !== 'none') renderAdminNotes();
+            else renderAdmin();
+          }
           if (document.getElementById('chat')?.classList.contains('active')) renderChat();
           if (document.getElementById('personalChatPanel')?.style.display === 'block') {
             renderPcFriends();
@@ -630,6 +709,10 @@ window.SupabaseSync = {
         console.warn('[VIT PYQ] Cross-device refresh failed', error);
       } finally {
         this.refreshBusy = false;
+        if (this.accountRefreshPending) {
+          this.accountRefreshPending = false;
+          this.queueAccountRefresh();
+        }
       }
     };
     this.refreshTimer = setInterval(refresh, 15000);
